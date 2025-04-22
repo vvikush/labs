@@ -1,0 +1,585 @@
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <stdlib.h> 
+#include <cstring>
+
+using namespace std;
+// delete function, dump databse function, load function, sort function, find function
+struct Point {
+    int x;
+    int y;
+}; 
+
+struct Slice {
+    Point p1;
+    Point p2;
+};
+
+void calculateWidths(struct DataBase dota[100], int rowCount, unsigned int* maxNameWidth,
+                    unsigned int* maxStrengthWidth, unsigned int* maxAgilityWidth, unsigned int* maxIntelligenceWidth);
+
+int getValue(DataBase* item, char* column);
+
+struct DataBase {
+    char name[20] = "";
+    char strength[20] = "-1";
+    char agility[20] = "-1";
+    char intelligence[20] = "-1";
+};
+
+
+void find(DataBase dota[100], int cur_row) {
+    unsigned int maxNameWidth = 20; 
+    unsigned int maxStrengthWidth = 20; 
+    unsigned int maxAgilityWidth = 20;    
+    unsigned int maxIntelligenceWidth = 20;  
+
+    calculateWidths(dota, cur_row, &maxNameWidth, &maxStrengthWidth, &maxAgilityWidth, &maxIntelligenceWidth);
+
+     // Print the formatted header
+    printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, "hero", maxStrengthWidth, "strength", maxAgilityWidth, "agility", maxIntelligenceWidth, "intelligence");
+    
+    char column[20];
+    printf("Enter a column to sort by: ");
+    scanf("%s", column);
+
+    if (strcmp(column, "strength") && strcmp(column, "agility") && strcmp(column, "intelligence")) {
+    do {
+        printf("Incorrect column name, please enter again: ");
+        scanf("%s", column);
+    } while (strcmp(column, "strength") && strcmp(column, "agility") && strcmp(column, "intelligence"));
+    }
+    int condition;
+    printf("Enter the condition value (select items from database > value): ");
+    scanf("%d", &condition);
+    for (int i = 0; i < cur_row; i++) {
+        int item = getValue(&dota[i], column);
+        if (item > condition) {
+            printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, dota[i].name, maxStrengthWidth, dota[i].strength, maxAgilityWidth, 
+            dota[i].agility, maxIntelligenceWidth, dota[i].intelligence);
+        }
+    }
+}
+
+
+// for numbers
+int getValue(DataBase* item, char* column) {
+    if (strcmp(column, "strength") == 0) return atoi(item->strength);
+    if (strcmp(column, "agility") == 0) return atoi(item->agility);
+    if (strcmp(column, "intelligence") == 0) return atoi(item->intelligence);
+    return -1;
+}
+
+
+int partition_num(DataBase dota[100], int start, int end, char* column) {
+    int pivot = getValue(&dota[end], column);
+    int i = start - 1;
+    DataBase temp;
+
+    for (int j = start; j <= end - 1; j++) {
+        if (getValue(&dota[j], column) < pivot) {
+            i++;
+            temp = dota[i];
+            dota[i] = dota[j];
+            dota[j] = temp;
+        }
+    }
+    i++;
+    temp = dota[i];
+    dota[i] = dota[end];
+    dota[end] = temp;
+
+    return i;
+}
+
+void quickSort_num(DataBase dota[100], int start, int end, char* column) {
+    if (end <= start) return;
+    int pivot = partition_num(dota, start, end, column);
+
+    quickSort_num(dota, start, pivot - 1, column);
+    quickSort_num(dota, pivot + 1, end, column);
+}
+
+
+
+// sort for strings
+int partition(DataBase dota[100], int start, int end) {
+    char* pivot = dota[end].name;
+    int i = start - 1;
+    DataBase temp;
+
+    for (int j = start; j <= end - 1; j++) {
+        if (strcmp(dota[j].name, pivot) < 0) {
+            i++;
+            temp = dota[i];
+            dota[i] = dota[j];
+            dota[j] = temp;
+        }
+    }
+    i++;
+    temp = dota[i];
+    dota[i] = dota[end];
+    dota[end] = temp;
+
+    return i; // pivot index
+}
+
+void quickSort(DataBase dota[100], int start, int end) {
+    if (end <= start) return;
+    int pivot = partition(dota, start, end);
+
+    quickSort(dota, start, pivot - 1);
+    quickSort(dota, pivot + 1, end);
+}
+
+
+void sort(DataBase dota[100], int cur_row) {
+    if (dota[0].name[0] == '\0') {
+        cout << "Database is empty!\n";
+        return;
+    }
+    unsigned int maxNameWidth = 20; 
+    unsigned int maxStrengthWidth = 20; 
+    unsigned int maxAgilityWidth = 20;    
+    unsigned int maxIntelligenceWidth = 20;  
+
+    calculateWidths(dota, cur_row, &maxNameWidth, &maxStrengthWidth, &maxAgilityWidth, &maxIntelligenceWidth);
+
+
+     // Print the formatted header
+    printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, "hero", maxStrengthWidth, "strength", maxAgilityWidth, "agility", maxIntelligenceWidth, "intelligence");
+    
+
+    char column[20];
+    printf("Enter a column to sort by: ");
+    scanf("%s", column);
+
+    if (strcmp(column, "strength") && strcmp(column, "agility") && strcmp(column, "intelligence") && strcmp(column, "hero")) {
+    do {
+        printf("Incorrect column name, please enter again: ");
+        scanf("%s", column);
+    } while (strcmp(column, "strength") && strcmp(column, "agility") && strcmp(column, "intelligence") && strcmp(column, "hero"));
+    }
+    
+    if ((!strcmp(column, "hero"))) 
+    quickSort(dota, 0, cur_row - 1);
+    
+    else if ((!strcmp(column, "strength"))) 
+    quickSort_num(dota, 0, cur_row - 1, column);
+
+    else if ((!strcmp(column, "agility"))) 
+        quickSort_num(dota, 0, cur_row - 1, column);
+
+    else if ((!strcmp(column, "intelligence"))) 
+        quickSort_num(dota, 0, cur_row - 1, column);
+}
+
+void calculateWidths(struct DataBase dota[100], int rowCount, unsigned int* maxNameWidth,
+unsigned int* maxStrengthWidth, unsigned int* maxAgilityWidth, unsigned int* maxIntelligenceWidth) {
+    for (int i = 0; i < rowCount; i++) {
+        *maxNameWidth = strlen(dota[i].name) > *maxNameWidth ? strlen(dota[i].name) : *maxNameWidth;
+        *maxStrengthWidth = strlen(dota[i].strength) > *maxStrengthWidth ? strlen(dota[i].strength) : *maxStrengthWidth;
+        *maxAgilityWidth = strlen(dota[i].agility) > *maxAgilityWidth ? strlen(dota[i].agility) : *maxAgilityWidth;
+        *maxIntelligenceWidth = strlen(dota[i].intelligence) > *maxIntelligenceWidth ? strlen(dota[i].intelligence) : *maxIntelligenceWidth;
+    }
+}
+
+int load (DataBase dota[100], char name[40]) {
+    char folder[40] = "Loaded Databases/";
+    char extension[5] = ".txt";
+    char PATH[90];
+    strcpy(PATH, folder);
+    strcat(PATH, name);
+    strcat(PATH, extension);
+
+    FILE *fp = fopen(PATH, "r");
+
+    if (fp ==NULL) {
+        printf("Error creating the file.\n");
+        return 0;
+    }
+
+    const unsigned MAX_LENGTH = 256;
+    char buffer[MAX_LENGTH];
+    printf("Laading Database...\n");
+    int cur_row = 0;
+    int cur_word = 0;
+    while (fgets(buffer, MAX_LENGTH, fp)) {
+        cur_word = 0;
+        if (cur_row != 0) {
+            printf("%s", buffer);
+            const char* delimeters = " ";
+            char* token = strtok(buffer, " ");\
+            while (token){
+                if (cur_word == 0)
+                    sscanf(token, "%20s", dota[cur_row - 1].name);
+
+                if (cur_word == 1)
+                    sscanf(token, "%20s", dota[cur_row - 1].strength);
+
+                if (cur_word == 2)
+                    sscanf(token, "%20s", dota[cur_row - 1].agility);
+
+                if (cur_word == 3)
+                    sscanf(token, "%20s", dota[cur_row - 1].intelligence);
+
+                token = strtok(nullptr, " ");
+
+                cur_word++;
+            }
+        }
+    cur_row++;
+    }
+    // close the file
+    fclose(fp);
+    return --cur_row;
+}
+
+
+void dump(DataBase dota[100]) {
+    if (dota[0].name[0] == '\0') {
+        cout << "Database is empty!\n";
+        return;
+    }
+
+    char name[40];
+    printf("Input the name of the file: ");
+    scanf("%s", name);
+    FILE *fp;
+    char folder[40] = "Loaded Databases/";
+    char extension[5] = ".txt";
+    char PATH[90];
+    strcpy(PATH, folder);
+    strcat(PATH, name);
+    strcat(PATH, extension);
+
+    fp = fopen(PATH, "w");
+
+    if (fp == NULL) {
+        printf("Error creating the file.\n");
+        return;
+    }
+
+    fprintf(fp, "%-20s\t", "Hero");
+    fprintf(fp, "%-20s\t", "Strength");
+    fprintf(fp, "%-20s\t", "Agility");
+    fprintf(fp, "%-20s\n", "Intelligence");
+
+    for (int i = 0; i < 100; i++) {
+        
+        // if any of attributes are empty we break
+        if ((dota[i].name[0] == '\0') || (
+            !strcmp(dota[i].strength, "-1")) || (
+            !strcmp(dota[i].agility, "-1")) || (
+            !strcmp(dota[i].intelligence, "-1"))) 
+                break;
+
+        fprintf(fp, "%-20s\t", dota[i].name);
+        fprintf(fp, "%-20s\t", dota[i].strength);
+        fprintf(fp, "%-20s\t", dota[i].agility);
+        fprintf(fp, "%-20s\n", dota[i].intelligence);
+    }
+
+    fclose(fp);
+}
+
+
+bool check(char string[20]) {
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (!isdigit(string[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void edit(DataBase dota[100], int i) {
+    // check if index i is valid
+    if ((i > 100) || i < 0) {
+        printf("Index must be between 0 and 99");
+        return;
+    }
+
+    // show the row which user want to edit
+    printf("If you do not want to edit an attribbute just skip it with enter");
+    printf("You are editing this row:\n");
+
+    printf("%-12s\t", "Hero");
+    printf("%-12s\t", "Strength");
+    printf("%-12s\t", "Agility");
+    printf("%-12s\n", "Intelligence");
+
+    printf("%-12s\t", dota[i].name);
+    printf("%-12s\t", dota[i].strength);
+    printf("%-12s\t", dota[i].agility);
+    printf("%-12s\n", dota[i].intelligence);
+
+    char input[20] = "";
+
+    printf("Enter the name: ");
+    scanf("%s", &input);
+    if (input[0] != '\0') {
+        strcpy(dota[i].name, input);
+    } 
+    
+    printf("Enter the value for strength atribute: ");
+    scanf("%s", &input);
+    if (input[0] != '\0') {
+        if (!check(input)) {
+        printf("Entered value must numeric\n");
+        do {
+            printf("Enter the value for strength atribute: ");
+            scanf("%s", input);
+        } while (!check(input));
+    }
+        strcpy(dota[i].strength, input);
+    }
+
+
+    printf("Enter the value for agility atribute: ");
+    scanf("%s", &input);
+    if (input[0] != '\0') {
+        if (!check(input)) {
+        printf("Entered value must numeric\n");
+        do {
+            printf("Enter the value for agility atribute: ");
+            scanf("%s", input);
+        } while (!check(input));
+    }
+        strcpy(dota[i].agility, input);
+    }
+
+
+    printf("Enter the value for intelligence atribute: ");
+    scanf("%s", &input);
+    if (input[0] != '\0') {
+        if (!check(input)) {
+        printf("Entered value must numeric\n");
+        do {
+            printf("Enter the value for intelligence atribute: ");
+            scanf("%s", input);
+        } while (!check(input));
+    }
+        strcpy(dota[i].intelligence, input);
+    }
+}
+
+void append(DataBase dota[100], int* i) {
+    unsigned int maxNameWidth = 20;
+    unsigned int maxStrengthWidth = 20;
+    unsigned int maxAgilityWidth = 20;
+    unsigned int maxIntelligenceWidth = 20;
+
+    calculateWidths(dota, *i, &maxNameWidth, &maxStrengthWidth, &maxAgilityWidth, &maxIntelligenceWidth);
+
+
+    printf("Enter the name: ");
+    scanf("%s", &dota[*i].name);
+    
+    printf("Enter the value for strength atribute: ");
+    scanf("%s", &dota[*i].strength);
+    
+    if (!check(dota[*i].strength)) {
+        printf("Entered value must numeric and positive\n");
+        do {
+            printf("Enter the value for strength atribute: ");
+            scanf("%s", &dota[*i].strength);
+        } while (!check(dota[*i].strength));
+    }
+
+    printf("Enter the value for agility atribute: ");
+    scanf("%s", &dota[*i].agility);
+
+    if (!check(dota[*i].agility)) {
+        printf("Entered value must numeric and positive\n");
+        do {
+            printf("Enter the value for strength atribute: ");
+            scanf("%s", &dota[*i].agility);
+        } while (!check(dota[*i].agility));
+    }
+
+    printf("Enter the value for intelligence atribute: ");
+    scanf("%s", &dota[*i].intelligence);
+
+    if (!check(dota[*i].intelligence)) {
+        printf("Entered value must numeric and positive\n");
+        do {
+            printf("Enter the value for strength atribute: ");
+            scanf("%s", &dota[*i].intelligence);
+        } while (!check(dota[*i].intelligence));
+    }
+    
+    maxNameWidth = strlen(dota[*i].name) > maxNameWidth ? strlen(dota[*i].name) : maxNameWidth;
+    maxStrengthWidth = strlen(dota[*i].strength) > maxStrengthWidth ? strlen(dota[*i].strength) : maxStrengthWidth;
+    maxAgilityWidth = strlen(dota[*i].agility) > maxAgilityWidth ? strlen(dota[*i].agility) : maxAgilityWidth;
+    maxIntelligenceWidth = strlen(dota[*i].intelligence) > maxIntelligenceWidth ? strlen(dota[*i].intelligence) : maxIntelligenceWidth;
+
+    printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, "Hero", maxStrengthWidth, "Strength", maxAgilityWidth, "Agility", maxIntelligenceWidth, "Intelligence");
+    printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, dota[*i].name, maxStrengthWidth, dota[*i].strength, maxAgilityWidth, dota[*i].agility, maxIntelligenceWidth, dota[*i].intelligence);
+
+    (*i)++;
+}
+
+
+void show(struct DataBase dota[100], int rowCount) {
+
+    // Calculate maximum column widths
+    unsigned int maxNameWidth = 20; 
+    unsigned int maxStrengthWidth = 20; 
+    unsigned int maxAgilityWidth = 20;    
+    unsigned int maxIntelligenceWidth = 20;  
+
+    calculateWidths(dota, rowCount, &maxNameWidth, &maxStrengthWidth, &maxAgilityWidth, &maxIntelligenceWidth);
+
+
+     // Print the formatted header
+    printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, "Hero", maxStrengthWidth, "Strength", maxAgilityWidth, "Agility", maxIntelligenceWidth, "Intelligence");
+
+    // Print the formatted data
+    for (int i = 0; i < rowCount; i++) {
+        printf("%-*s%-*s%-*s%-*s\n", maxNameWidth, dota[i].name, maxStrengthWidth, dota[i].strength, maxAgilityWidth, dota[i].agility, maxIntelligenceWidth, dota[i].intelligence);
+    }
+}
+
+void help() {
+    printf("\n");
+    
+    printf("/exit to exit\n");
+    printf("\n");
+
+    printf("/clear to clear the screen\n");
+    printf("\n");
+
+    printf("/append to append a row to the end of database\n");
+    printf("\n");
+
+    printf("/show to show the database\n");
+    printf("\n");
+
+    printf("/del to delete a row by index\n");
+    printf("\n");
+
+    printf("/sort to sort the rows in alphabetical order\n");
+    printf("\n");
+
+    printf("/find_strength to find all heroes which have their attribute of strength higher than specified number\n");
+    printf("\n");
+
+    printf("/find_agility to find all heroes which have their attribute of agility higher than specified number\n");
+    printf("\n");
+
+    printf("/find_intelligence to find all heroes which have their attribute of intelligence higher than specified number\n");
+    printf("\n");
+
+    printf("/dump to dump a database to current directory\n");
+    printf("\n");
+
+    printf("/load to load a database in a current directory\n");
+    printf("\n");
+}
+
+void clear() {
+    system("CLS");
+    printf("Screen was cleared\n\n");
+}
+
+
+// dota[4], [0, 1, 2, 3, 4, 5] dota[3] = dota[4] dota[4] = dota[5]
+// dota[]
+void del(DataBase dota[100], int index) {
+    if ((index > 99) || (index < -1)) {
+        printf("Incorrecct value for index");
+        return;
+    }
+
+    for (int i = 0; i < 100; i++) {
+        if (i > index) {
+            strcpy(dota[i - 1].name, dota[i].name);
+            strcpy(dota[i - 1].strength, dota[i].strength);
+            strcpy(dota[i - 1].agility, dota[i].agility);
+            strcpy(dota[i - 1].intelligence, dota[i].intelligence);
+        } 
+    }
+}
+
+int main() {
+    int current_row = 0;
+    DataBase Dota2[100];
+    printf("For help type /help\n");
+
+    while (true) {
+        char input[20];
+        scanf("%s", input);
+        if (!strcmp(input, "/exit")) return 0;
+
+        else if (!strcmp(input, "/help")) {
+            help();
+        }
+
+        else if (!strcmp(input, "/append")) {
+            append(Dota2, &current_row);
+        }
+
+        else if (!strcmp(input, "/show")) {
+            show(Dota2, current_row);
+        }
+
+        else if (!strcmp(input, "/clear")) {
+            clear();
+        }
+
+        else if (!strcmp(input, "/del")) {
+            // modify to char[20] and checck if it is a string
+            int n = 0;
+            printf("Input index for row you want to delete: ");
+            scanf("%d", &n);
+            del(Dota2, n);
+            current_row -= 1;
+        }
+
+        else if (!strcmp(input, "/dump")) {
+            dump(Dota2);
+        }
+
+        else if (!strcmp(input, "/load")) {
+            char name[40];
+            printf("Input the name of the file: ");
+            scanf("%s", &name);
+            current_row = load(Dota2, name);
+        }
+
+        else if (!strcmp(input, "/sort")) {
+            sort(Dota2, current_row);
+        }
+
+        else if (!strcmp(input, "/find")) {
+            find(Dota2, current_row);
+        }
+
+        else printf("Unknown command\n");
+    }
+
+    return 0;
+}
+
+
+
+
+//if (!check(list[0].pages)) {
+printf("должен быть цифрой!\n");
+do {
+    printf("должен быть цифрой! ");
+    scanf("%s", &list[0].pages);
+} while (!check(list[0].pages));
+    }
+
+
+    //bool check(char string[20]) {
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (!isdigit(string[i])) {
+            return false;
+        }
+    }
+    return true;
+}
