@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+// Структура для представления книги
+struct Book {
+    int id;
+    string title;
+    string author;
+    string publisher;
+};
+
+// Структура для представления автора
+struct Author {
+    string name;
+    vector<Book> books; // Вектор книг, написанных этим автором
+};
+
+// Структура для представления издательства
+struct Publisher {
+    string name;
+    vector<Book> publishedBooks; // Вектор книг, опубликованных этим издательством
+};
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    // Создаем несколько книг, авторов и издательств
+    Book book1 = { 1, "Название_Книги_1", "Автор_1", "Издательство_1" };
+    Book book2 = { 2, "Название_Книги_2", "Автор_2", "Издательство_2" };
+    Book book3 = { 3, "Название_Книги_3", "Автор_3", "Издательство_3" };
+
+    Author author1 = { "Автор_1", {book1} };
+    Author author2 = { "Автор_2", {book2} };
+    Author author3 = { "Автор_3", {book3} };
+
+    Publisher publisher1 = { "Издательство_1", {book1} };
+    Publisher publisher2 = { "Издательство_2", {book2} };
+    Publisher publisher3 = { "Издательство_3", {book3} };
+
+    // Выводим информацию о книгах, авторах и издательствах
+    cout << "Книги:" << endl;
+    cout << "ID\tНазвание\tАвтор\tИздательство" << endl;
+    cout << book1.id << "\t" << book1.title << "\t" << book1.author << "\t" << book1.publisher << endl;
+    cout << book2.id << "\t" << book2.title << "\t" << book2.author << "\t" << book2.publisher << endl;
+    cout << book3.id << "\t" << book3.title << "\t" << book3.author << "\t" << book3.publisher << endl;
+
+    cout << "\nАвторы и их книги:" << endl;
+    cout << "Имя\t\t\tКниги" << endl;
+    cout << author1.name << "\t\t" << author1.books[0].title << endl;
+    cout << author2.name << "\t\t" << author2.books[0].title << endl;
+    cout << author3.name << "\t\t" << author3.books[0].title << endl;
+
+    cout << "\nИздательства и их книги:" << endl;
+    cout << "Название\t\tКниги" << endl;
+    cout << publisher1.name << "\t\t" << publisher1.publishedBooks[0].title << endl;
+    cout << publisher2.name << "\t\t" << publisher2.publishedBooks[0].title << endl;
+    cout << publisher3.name << "\t\t" << publisher3.publishedBooks[0].title << endl;
+
+    return 0;
+}
+
