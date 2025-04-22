@@ -1,0 +1,42 @@
+//28.(35 - 44) Создать класс, описывающий параллелограмм и содержащий функцию, 
+//определяющую высоту параллелограмма.Найти площадь параллелограмма.
+
+#include<iostream>
+#include <math.h>
+using namespace std;
+
+class Parallelogram 
+{
+public: 
+	float storona;
+	float alpha;
+	float Height(float,float);
+	
+	Parallelogram(float a, float b) : storona(a), alpha (b) {
+	}
+	~Parallelogram()
+	{
+		std::cout << "poka";
+	}
+};
+
+float Parallelogram::Height(float storona, float alpha)
+{
+	alpha = round((alpha / 180 * 3.14) * 10) / 10;
+	float height = storona * alpha;
+	return height;
+};
+int main()
+{
+	
+	float storona;
+	float alpha;
+
+	cout << "Vvedite storonu parallelograma: ";
+    cin >> storona;
+	cout << "Vvedite ugol alpha parallelograma: ";
+	cin >> alpha;
+	Parallelogram par(storona, alpha);
+	float vysota = par.Height(par.storona, par.alpha);
+	cout << "Ploshad parallelograma ravna: " <<  vysota * par.storona;
+};
