@@ -1,0 +1,56 @@
+// дан двумерный массив размерности N*M. Вычислить среднее арифметическое элементов этого массива, 
+// находящихся в столбцах с отрицательной суммой элементов.
+
+#include <stdio.h>
+
+int main()
+{
+	int A[10][10];
+	int SR = 0, S2 = 0, S1 = 0, p = 0, N, M;
+	printf("vvedite razmernost massiva [N*M]: ");
+	scanf_s("%d %d", &N, &M);
+	printf("vvedeno %d strok i %d stolbcov", N, M);
+	for (int i = 0; i < N; i++)
+	{
+		printf("\n");
+		for (int j = 0; j < M; j++)
+		{
+			printf("vvedite A [%d][%d]: ", i, j);
+			scanf_s("%d", &A[i][j]);
+
+		}
+	}
+	printf("vvedite massiv \n");
+	p = 0;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+			printf("%d ", A[i][j]);
+		printf("\n");
+	}
+	for (int j = 0; j < M; j++) {
+		int S1 = 0;
+		for (int i = 0; i < N; i++)
+		{
+			S1 = S1 + A[i][j];
+		}
+		if (S1 < 0) {
+			p = p + N;
+			S2 = S2 + S1;
+		}
+	}
+	SR = S2 / p;
+	printf("kol vo elementov: %d ", p);
+	printf("sum: %d ", S2);
+	printf("sreednee arifmeticheskoe ravno: %d ", SR);
+
+
+	//int i = -5;
+	//for(;i<10;)
+	//for(;5;)
+	//printf("cat");
+	//printf("dog");
+
+}
+	
+
