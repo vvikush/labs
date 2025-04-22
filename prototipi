@@ -1,0 +1,70 @@
+// поменять местами строки, в которых содержатся наибольший и наименьший элемент матрицы
+#include <stdio.h>
+
+void vvod(int[10][10], int, int);
+void obrabotka(int[10][10], int, int, int*, int*);
+void vivod(int[10][10], int, int, int, int);
+
+int main()
+{
+	int A[10][10];
+	int t = 0, k = 0, min = A[0][0], max = A[0][0], N, M;
+	printf("vvedite razmernost massiva [N*M]: ");
+	scanf_s("%d %d", &N, &M);
+	printf("\n");
+	vvod(A, N, M);
+	obrabotka(A, N, M, &t, &k);
+	vivod(A, N, M, t, k);
+}
+
+void vvod(int a[10][10], int n, int m) {
+
+	printf("vvedite massiv: \n");
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++)
+			scanf_s("%d", &a[i][j]);
+	}
+}
+
+void obrabotka(int a[10][10], int n, int m, int* line_max, int* line_min) {
+	int min = a[0][0];
+	int max = a[0][0];
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			if (a[i][j] < min)
+			{
+				min = a[i][j];
+				*line_min = i;
+			}
+			if (a[i][j] > max)
+			{
+				max = a[i][j];
+				*line_max = i;
+			}
+
+		}
+	}
+}
+
+void vivod(int a[10][10], int n, int m, int line_max, int line_min) {
+	printf("izmenenniy massiv: \n");
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++) {
+			if (i == line_max)
+			{
+				printf("%d ", a[line_min][j]);
+			}
+			else if (i == line_min)
+			{
+				printf("%d ", a[line_max][j]);
+			}
+			else {
+				printf("%d ", a[i][j]);
+			}
+		}
+		printf("\n");
+	}
+}
