@@ -1,0 +1,525 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <locale.h>
+#include <Windows.h>
+#include <string.h>
+
+
+struct book {
+	char name[30];
+	char author[30];
+	int pages;
+	int year;
+};
+int count = 0;
+
+struct zhivotnoe {
+	int ves;
+	int vozrast;
+};
+struct cat {
+	char name[10];
+	zhivotnoe dannyi;
+};
+
+
+void swap(struct book* a, struct book* b) {
+	struct book temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void addBook(struct book* list) {
+	printf("Добавление книги\n");
+	scanf("%s", &list[count].name);
+	scanf("%s", &list[count].author);
+	scanf("%d ", &list[count].pages);
+	scanf("%d", &list[count].year);
+	printf("Книга добавлена\n");
+	count += 1;
+}
+
+void inputFile(struct book* list) {
+	FILE* myfile;
+	myfile = fopen("input.txt", "r");
+	if (!myfile) {
+		perror("File opening failed");
+		return;
+	}
+	while (fscanf(myfile, "%s %s %d %d", &(list[count].name), &(list[count].author), &(list[count].pages), &(list[count].year)) != EOF) {
+		count++;
+	}
+	fclose(myfile);
+	printf("Ввод успешно завершен\n");
+}
+
+void outputFile(struct book* list) {
+	for (int i = 0; i < count; i++) {
+		FILE* myfile;
+		errno_t err;
+		err = fopen_s(&myfile, "output.txt", "w");
+		for (int i = 0; i < count; i++) {
+			fprintf(myfile, "%d. %s %s %d %d\n", i + 1, list[i].name, list[i].author, list[i].pages, list[i].year);
+		}
+		fclose(myfile);
+	}
+	printf("Вывод успешно завершен\n");
+}
+
+void output(struct book* list) {
+	printf("Список книг:\n");
+	for (int i = 0; i < count; i++) {
+		printf("%d. ", i + 1);
+		printf("%s ", list[i].name);
+		printf("%s ", list[i].author);
+		printf("%d ", list[i].pages);
+		printf("%d\n", list[i].year);
+	}
+}
+
+void deleteRow(struct book* list, int rowToDelete) {
+	for (int i = rowToDelete; i < count; i++) {
+		list[i] = list[i + 1];
+	}
+	count -= 1;
+}
+
+void deleteBook(struct book* list) {
+	int stringNumberToDelete = 0;
+	printf("Удаление книги\n");
+	printf("Выберите номер строки для удаления\n");
+	output(list);
+	scanf_s("%d", &stringNumberToDelete);
+	deleteRow(list, stringNumberToDelete - 1);
+	printf("Книга удалена\n");
+	output(list);
+}
+
+
+
+void deleteByName(struct book* list) {
+	char name[30];
+	printf("Введите имя для удаления\n");
+	scanf("%s", &name);
+	for (int i = 0; i < count; i++) {
+		if (strcmp(name, list[i].name) == 0) {
+			deleteRow(list, i);
+			i -= 1;
+		}
+	}
+	printf("Книги удалены\n");
+	output(list);
+}
+
+void deleteByAuthor(struct book* list) {
+	char author[30];
+	printf("Введите автора для удаления\n");
+	scanf("%s", &author);
+	for (int i = 0; i < count; i++) {
+		if (strcmp(author, list[i].author) == 0) {
+			deleteRow(list, i);
+			i -= 1;
+		}
+	}
+	printf("Книги удалены\n");
+	output(list);
+}
+
+void deleteByPages(struct book* list) {
+	int pages = 0;
+	printf("Введите количество страниц для удаления\n");
+	scanf("%d", &pages);
+
+	for (int i = 0; i < count; i++) {
+		if (list[i].pages == pages) {
+			deleteRow(list, i);
+			i -= 1;
+		}
+	}
+	printf("Книги удалены\n");
+	output(list);
+}
+
+void deleteByYear(struct book* list) {
+	int year = 0;
+	printf("Введите год издания для удаления\n");
+	scanf("%d", &year);
+
+	for (int i = 0; i < count; i++) {
+		if (list[i].year == year) {
+			deleteRow(list, i);
+			i -= 1;
+		}
+	}
+	printf("Книги удалены\n");
+	output(list);
+}
+
+void deleteByColumn(struct book* list) {
+	if (count!= 0) {
+		int deleteBy = 0;
+		printf("Удаление по\n");
+		printf("1. Названию\n");
+		printf("2. Автору\n");
+		printf("3. Количеству страниц\n");
+		printf("4. Году издания\n");
+		scanf("%d", &deleteBy);
+		switch (deleteBy) {
+		case 1:
+			deleteByName(list);
+			break;
+		case 2:
+			deleteByAuthor(list);
+			break;
+		case 3:
+			deleteByPages(list);
+			break;
+		case 4:
+			deleteByYear(list);
+			break;
+		default:printf("Проверка на дурака провалена. Такого кейса нет!\n");
+			break;
+		}
+	}
+	
+}
+
+
+void sortByName(struct book* list) {
+	if (list[0].name[0] == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	int sortBy = 0;
+	printf("Сортировать от\n");
+	printf("1. А до Я\n");
+	printf("2. Я до А\n");
+	scanf("%d", &sortBy);
+	switch (sortBy)
+	{
+	case 1:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (strcmp(list[j].name, list[j + 1].name) > 0) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	case 2:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (strcmp(list[j].name, list[j + 1].name) < 0) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	default:printf("Проверка на дурака провалена. Такого кейса нет!\n"); break;
+	}
+	output(list);
+}
+
+void sortByAuthor(struct book* list) {
+	if (list[0].author[0] == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	int sortBy = 0;
+	printf("Сортировать от\n");
+	printf("1. А до Я\n");
+	printf("2. Я до А\n");
+	scanf("%d", &sortBy);
+	switch (sortBy)
+	{
+	case 1:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (strcmp(list[j].author, list[j + 1].author) > 0) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+			break;
+		}
+	case 2:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (strcmp(list[j].author, list[j + 1].author) < 0) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	default:printf("Проверка на дурака провалена. Такого кейса нет!\n"); break;
+	}
+	output(list);
+}
+
+void sortByPages(struct book* list)
+{
+	if (list[0].pages == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	int sortBy = 0;
+	printf("Сортировать по\n");
+	printf("1. Убыванию\n");
+	printf("2. Возрастанию\n");
+	scanf("%d", &sortBy);
+	switch (sortBy) {
+	case 1:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (list[j].pages < list[j + 1].pages) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	case 2:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (list[j].pages > list[j + 1].pages) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	default:printf("Проверка на дурака провалена. Такого кейса нет!\n"); break;
+	}
+	output(list);
+}
+
+void sortByYear(struct book* list)
+{
+	if (list[0].year == '\0')
+	{
+		printf("Значение не введено!\n");
+		return;
+	}
+	int sortBy = 0;
+	printf("Сортировать по\n");
+	printf("1. Убыванию\n");
+	printf("2. Возрастанию\n");
+	scanf("%d", &sortBy);
+	switch (sortBy) {
+	case 1:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (list[j].year < list[j + 1].year) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	case 2:
+		for (int i = 0; i < count - 1; i++) {
+			for (int j = 0; j < count - i - 1; j++) {
+				if (list[j].year > list[j + 1].year) {
+					swap(&list[j], &list[j + 1]);
+				}
+			}
+		}
+		break;
+	}
+	output(list);
+}
+
+
+void sort(struct book* list) {
+	int sortBy = 0;
+	printf("Сортировка по\n");
+	printf("1. Имени\n");
+	printf("2. Автору\n");
+	printf("3. Количеству страниц\n");
+	printf("4. Году издания\n");
+	scanf("%d", &sortBy);
+	switch (sortBy) {
+	case 1:
+		sortByName(list);
+		break;
+	case 2:
+		sortByAuthor(list);
+		break;
+	case 3:
+		sortByPages(list);
+		break;
+	case 4:
+		sortByYear(list);
+		break;
+	default:printf("Проверка на дурака провалена. Такого кейса нет!\n"); break;
+	}
+}
+
+
+
+
+void searchByName(struct book* list) {
+	if (list[0].name[0] == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	char name[30];
+	printf("Введите название для поиска\n");
+	scanf("%s", &name);
+	for (int i = 0; i < count; i++) {
+		if (strcmp(name, list[i].name) == 0) {
+			printf("%d ", list[i].pages);
+			printf("%s ", list[i].name);
+			printf("%s ", list[i].author);
+			printf("%d\n", list[i].year);
+			break;
+		}
+	}
+}
+
+void searchByAuthor(struct book* list) {
+	if (list[0].author[0] == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	char author[30];
+	printf("Введите автора для поиска\n");
+	scanf("%s", &author);
+	for (int i = 0; i < count; i++) {
+		if (strcmp(author, list[i].author) == 0) {
+			printf("%d ", list[i].pages);
+			printf("%s ", list[i].name);
+			printf("%s ", list[i].author);
+			printf("%d\n", list[i].year);
+			break;
+		}
+	}
+}
+
+void searchByPages(struct book* list) {
+	if (list[0].pages == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	int pages = 0;
+	printf("Введите количество страниц для поиска\n");
+	scanf("%d", &pages);
+	for (int i = 0; i < count; i++) {
+		if (list[i].pages == pages) {
+			printf("%d ", list[i].pages);
+			printf("%s ", list[i].name);
+			printf("%s ", list[i].author);
+			printf("%d\n", list[i].year);
+			break;
+		}
+	}
+}
+
+void searchByYear(struct book* list) {
+	if (list[0].year == '\0') {
+		printf("Значение не введено!\n");
+		return;
+	}
+	int year = 0;
+
+	printf("Введите год издания для поиска\n");
+	scanf("%d", &year);
+	if (!isdigit(list[count].year)) {
+		printf("Введенное значение должно быть цифрой!");
+		do { scanf("%d ", &list[count].year); } while (!isdigit(list[count].year));
+	}
+
+
+	for (int i = 0; i < count; i++) {
+		if (list[i].year == year) {
+			printf("%d ", list[i].pages);
+			printf("%s ", list[i].name);
+			printf("%s ", list[i].author);
+			printf("%d\n", list[i].year);
+			break;
+		}
+	}
+}
+
+void search(struct book* list) {
+	int searchBy = 0;
+	printf("Поиск по\n");
+	printf("1. Имени\n");
+	printf("2. Автору\n");
+	printf("3. Количеству страниц\n");
+	printf("4. Году издания\n");
+	scanf("%d", &searchBy);
+	switch (searchBy) {
+	case 1:
+		searchByName(list);
+		break;
+	case 2:
+		searchByAuthor(list);
+		break;
+	case 3:
+		searchByPages(list);
+		break;
+	case 4:
+		searchByYear(list);
+		break;
+	default:printf("Проверка на дурака провалена. Такого кейса нет!\n"); break;
+	}
+}
+
+
+int main() {
+	struct cat Boris;
+	Boris.danniy.ves = 5;
+
+	setlocale(LC_ALL, "RUS");
+	struct book listOfBooks[100] ;
+	while (true) {
+		int command = 0;
+		printf("\n1. Добавить книгу\n");
+		printf("2. Добавить книгу из файла\n");
+		printf("3. Удалить книгу\n");
+		printf("4. Удалить книгу по стобцу\n");
+		printf("5. Вывести список книг\n");
+		printf("6. Вывести список книг в файл\n");
+		printf("7. Сортировать список книг\n");
+		printf("8. Поиск\n");
+		printf("9. Выход\n");
+		scanf("%d", &command);
+		switch (command) {
+		case 1:
+			system("cls");
+			addBook(listOfBooks);
+			break;
+		case 2:
+			inputFile(listOfBooks);
+			break;
+		case 3:
+			system("cls");
+			deleteBook(listOfBooks);
+			break;
+		case 4:
+			system("cls");
+			deleteByColumn(listOfBooks);
+			break;
+		case 5:
+			system("cls");
+			output(listOfBooks);
+			break;
+		case 6:
+			outputFile(listOfBooks);
+			break;
+		case 7:
+			system("cls");
+			sort(listOfBooks);
+			break;
+		case 8:
+			system("cls");
+			search(listOfBooks);
+			break;
+		case 9:
+			exit(1);
+		default:
+			system("cls");
+			printf("Проверка на дурака провалена. Такого кейса нет!\n");
+			break;
+		}
+	}
+}
+
+
