@@ -1,0 +1,59 @@
+#include <stdio.h>
+int main()
+{
+	int A[10][10];
+	int t, k, min = A[0][0], max = A[0][0], N, M;
+	printf("vvedite razmernost massiva [N*M]: ");
+	scanf_s("%d %d", &N, &M);
+	printf("vvedeno %d strok i %d stolbcov", N, M);
+
+	printf("vvedite massiv: \n");
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++)
+			scanf_s("%d", &A[i][j]);
+	}
+
+
+	for (int i = 0; i < N; i++)
+	{
+
+		for (int j = 0; j < M; j++)
+		{
+
+			if (A[i][j] < min)
+			{
+				min = A[i][j];
+				k = i;
+			}
+			if (A[i][j] > max)
+			{
+				max = A[i][j];
+				t = i;
+			}
+
+		}
+
+
+	}
+
+	printf("izmenenniy massiv: \n");
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++) {
+			if (i == t)
+			{
+				printf("%d ", A[k][j]);
+			}
+			else if (i == k)
+			{
+				printf("%d ", A[t][j]);
+			}
+			else {
+				printf("%d ", A[i][j]);
+			}
+		}
+		printf("\n");
+
+	}
+}
+
