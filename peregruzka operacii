@@ -1,0 +1,89 @@
+//Создать класс, описывающий квадратное уравнение. Определить, сколько корней имеет уравнение.
+//Перегрузить операцию умножения, чтобы найти произведение наибольших корней двух уравнений.
+
+#include<iostream>
+#include <math.h>
+#include <cmath>
+using namespace std;
+
+class uravnenie
+{
+public:
+    double a, b, c;
+    uravnenie(double a, double pb, double pc) {
+        this->a = a;
+        b = pb;
+        c = pc;
+    }
+    
+   
+};
+
+float  operator* (uravnenie ur, uravnenie ur2) {
+    float max1, max2;
+    float d = ur.b * ur.b - 4 * a * this->c; //указатели на элемент объекта класса для которого вызывается перегузка. 
+    if (d < 0) {
+        cout << "дискр отриц";
+        exit(1);
+    }
+    float  x1 = ((-this->b) + sqrt(d)) / (2 * this->a);
+    float  x2 = ((-this->b) - sqrt(d)) / (2 * this->a);
+    cout << "У уравнения 2 корня:\n" << "x1 = " << x1 << "\nx2 = " << x2 << "\n";
+    if (x1 > x2)
+    {
+        max1 = x1;
+        cout << "Максимальный корень: " << x1 << "\n";
+    }
+    else
+    {
+        max1 = x2;
+        cout << "Максимальный корень: " << x2 << "\n";
+    }
+    d = ur2.b * ur2.b - 4 * ur2.a * ur2.c;
+    if (d < 0) {
+        cout << "дискр отриц";
+        exit(1);
+    }
+    x1 = ((-ur2.b) + sqrt(d)) / (2 * ur2.a);
+    x2 = ((-ur2.b) - sqrt(d)) / (2 * ur2.a);
+    cout << "У уравнения 2 корня:\n" << "x1 = " << x1 << "\nx2 = " << x2 << "\n";
+    if (x1 > x2)
+    {
+        max2 = x1;
+        cout << "Максимальный корень: " << x1 << "\n";
+    }
+    else
+    {
+        max2 = x2;
+        cout << "Максимальный корень: " << x2 << "\n";
+    }
+    return max1 * max2;
+}
+
+void main()
+{
+    setlocale(LC_ALL, "russian");
+    double a1, b1, c1, d1 = 0, x1 = 0, x2 = 0;
+    cout << "Введите данные для первого уравнения\n";
+    cout << "Введите a= "; // Вводим исходные данные
+    cin >> a1;
+    cout << "Введите b= ";
+    cin >> b1;
+    cout << "Введите c= ";
+    cin >> c1;
+    uravnenie ur(a1, b1, c1);
+
+
+    double a2, b2, c2, d2 = 0, y1 = 0, y2 = 0;
+    cout << "Введите данные для второго уравнения\n";
+    cout << "Введите a= "; // Вводим исходные данные
+    cin >> a2;
+    cout << "Введите b= ";
+    cin >> b2;
+    cout << "Введите c= ";
+    cin >> c2;
+
+    uravnenie ur2(a2, b2, c2);
+
+    cout << "Умножение двух корней: " << ur*ur2;
+};
