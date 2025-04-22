@@ -1,0 +1,56 @@
+// дан двумерный массив размерности N*M. Вычислить среднее арифметическое элементов этого массива, 
+// находящихся в столбцах с отрицательной суммой элементов.
+
+#include <stdio.h>
+
+
+void vvod(int a[10][10], int* n, int* m) {
+	printf("vvedite razmernost massiva [N*M]: ");
+	scanf_s("%d %d", n, m);
+	printf("vvedeno %d strok i %d stolbcov", *n, *m);
+	for (int i = 0; i < *n; i++)
+	{
+		printf("\n");
+		for (int j = 0; j < *m; j++)
+		{
+			printf("vvedite a [%d][%d]: ", i, j);
+			scanf_s("%d", &a[i][j]);
+
+		}
+	}
+	printf("vvedite massiv \n");
+	for (int i = 0; i < *n; i++)
+	{
+		for (int j = 0; j < *m; j++)
+			printf("%d ", a[i][j]);
+		printf("\n");
+	}
+}
+void obrabotka(int a[10][10], int* n, int* m, int *sredarif)
+{
+	int summa2 = 0;
+	int p = 0;
+	for (int j = 0; j < *m; j++) {
+		int summa1 = 0;
+		for (int i = 0; i < *n; i++)
+		{
+			summa1 = summa1 + a[i][j];
+		}
+		if (summa1 < 0) {
+			p = p + *n;
+			summa2 = summa2 + summa1;
+		}
+	}
+	*sredarif = summa2 / p;
+}
+void vivod(int *sredarif)
+{ printf("sreednee arifmeticheskoe ravno: %d ", *sredarif); }
+
+int main()
+{
+	int A[10][10];
+	int SR = 0, N, M;
+	vvod(A, &N, &M);
+	obrabotka(A, &N, &M, &SR);
+	vivod(&SR);
+}
