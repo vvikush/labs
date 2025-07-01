@@ -2,8 +2,6 @@
 #include <math.h>
 
 #define NMAX 30
-#define SUCCESS 1
-#define ERROR 0
 
 int input(int *a, int *n);
 double mean(int *a, int n);
@@ -14,7 +12,7 @@ void output_result(int result);
 int main() {
     int n, a[NMAX];
 
-    if (!input(a, &n) || n <= 0 || n > NMAX) {
+    if (!input(a, &n)) {
         printf("n/a\n");
         return 1;
     }
@@ -30,32 +28,36 @@ int main() {
 }
 
 int input(int *a, int *n) {
-    if (scanf("%d", n) != 1) return 0;
-    if (*n <= 0 || *n > NMAX) return 0;
+    if (scanf("%d", n) != 1 || *n <= 0 || *n > NMAX)
+        return 0;
 
     for (int i = 0; i < *n; i++) {
-        if (scanf("%d", &a[i]) != 1) return 0;
+        if (scanf("%d", &a[i]) != 1)
+            return 0;
     }
 
-    char ch;
-    if ((ch = getchar()) != '\n' && ch != EOF) return 0;
+    // Проверка на лишние символы после массива
+    char c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t')  // допускаем пробелы и табы
+            return 0;
+    }
 
     return 1;
 }
 
 double mean(int *a, int n) {
     double sum = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
         sum += a[i];
-    }
     return sum / n;
 }
 
 double variance(int *a, int n, double mean_val) {
     double sum = 0;
     for (int i = 0; i < n; i++) {
-        double diff = a[i] - mean_val;
-        sum += diff * diff;
+        double d = a[i] - mean_val;
+        sum += d * d;
     }
     return sum / n;
 }
