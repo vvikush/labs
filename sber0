@@ -1,12 +1,12 @@
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 #define NMAX 30
 
 int input(int *a, int *n);
 double mean(int *a, int n);
 double variance(int *a, int n, double mean_val);
-int find_value(int *a, int n, double mean_val, double threshold);
+int nuzhno(int *a, int n, double mean_val, double sigm);
 void output_result(int result);
 
 int main() {
@@ -19,28 +19,24 @@ int main() {
 
     double m = mean(a, n);
     double var = variance(a, n, m);
-    double threshold = m + 3 * sqrt(var);
+    double sigm = m + 3 * sqrt(var);
 
-    int result = find_value(a, n, m, threshold);
+    int result = nuzhno(a, n, m, sigm);
     output_result(result);
 
     return 0;
 }
 
 int input(int *a, int *n) {
-    if (scanf("%d", n) != 1 || *n <= 0 || *n > NMAX)
-        return 0;
+    if (scanf("%d", n) != 1 || *n <= 0 || *n > NMAX) return 0;
 
     for (int i = 0; i < *n; i++) {
-        if (scanf("%d", &a[i]) != 1)
-            return 0;
+        if (scanf("%d", &a[i]) != 1) return 0;
     }
 
-    // Проверка на лишние символы после массива
     char c;
     while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t')  // допускаем пробелы и табы
-            return 0;
+        if (c != ' ' && c != '\t') return 0;
     }
 
     return 1;
@@ -48,8 +44,7 @@ int input(int *a, int *n) {
 
 double mean(int *a, int n) {
     double sum = 0;
-    for (int i = 0; i < n; i++)
-        sum += a[i];
+    for (int i = 0; i < n; i++) sum = sum + a[i];
     return sum / n;
 }
 
@@ -57,21 +52,19 @@ double variance(int *a, int n, double mean_val) {
     double sum = 0;
     for (int i = 0; i < n; i++) {
         double d = a[i] - mean_val;
-        sum += d * d;
+        sum = sum + d * d;
     }
     return sum / n;
 }
 
-int find_value(int *a, int n, double mean_val, double threshold) {
+int nuzhno(int *a, int n, double mean_val, double sigm) {
     for (int i = 0; i < n; i++) {
         int x = a[i];
-        if (x != 0 && x % 2 == 0 && x >= mean_val && x <= threshold) {
+        if (x != 0 && x % 2 == 0 && (double)x >= mean_val && (double)x <= sigm) {
             return x;
         }
     }
     return 0;
 }
 
-void output_result(int result) {
-    printf("%d\n", result);
-}
+void output_result(int result) { printf("%d\n", result); }
