@@ -1,18 +1,30 @@
 #include <stdio.h>
 
-#define MAX_SIZE 10
+#define LEN 100
 
-int input(int *a, int *n, int *shift);
-void shift_array(int *a, int n, int shift);
-void output(int *a, int n);
+void sum(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
+void sub(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
 
-int main(void) {
-    int a[MAX_SIZE];
-    int n, shift;
+int input(int *a, int *len);
+void output(int *a, int len);
+int is_greater_or_equal(int *a, int len1, int *b, int len2);
 
-    if (input(a, &n, &shift)) {
-        shift_array(a, n, shift);
-        output(a, n);
+int main() {
+    int buff1[LEN], buff2[LEN];
+    int res_sum[LEN + 1], len_sum;
+    int res_sub[LEN], len_sub;
+    int len1, len2;
+
+    if (input(buff1, &len1) && input(buff2, &len2)) {
+        sum(buff1, len1, buff2, len2, res_sum, &len_sum);
+        output(res_sum, len_sum);
+
+        if (is_greater_or_equal(buff1, len1, buff2, len2)) {
+            sub(buff1, len1, buff2, len2, res_sub, &len_sub);
+            output(res_sub, len_sub);
+        } else {
+            printf("n/a\n");
+        }
     } else {
         printf("n/a\n");
     }
@@ -20,66 +32,13 @@ int main(void) {
     return 0;
 }
 
-int input(int *a, int *n, int *shift) {
-    int i, temp, result = 1;
+int input(int *a, int *len) {
+    int val, ok = 1;
     char c;
+    *len = 0;
 
-    if (scanf("%d", n) != 1 || *n <= 0 || *n > MAX_SIZE) {
-        result = 0;
-    }
-
-    for (i = 0; i < *n && result; i++) {
-        if (scanf("%d", &temp) != 1) {
-            result = 0;
+    while (scanf("%d", &val) == 1) {
+        if (val < 0 || val > 9 || *len >= LEN) {
+            ok = 0;
         }
-        a[i] = temp;
-    }
-
-    if (result && scanf("%d", shift) != 1) {
-        result = 0;
-    }
-
-    while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            result = 0;
-        }
-    }
-
-    return result;
-}
-
-void shift_array(int *a, int n, int shift) {
-    int b[MAX_SIZE];
-    int i, index;
-    int norm_shift;
-
-    // приведение сдвига к диапазону 0..n-1
-    if (shift >= 0) {
-        norm_shift = shift % n;
-    } else {
-        norm_shift = n + (shift % n);
-        if (norm_shift == n) {
-            norm_shift = 0;
-        }
-    }
-
-    for (i = 0; i < n; i++) {
-        index = (i + norm_shift) % n;
-        b[i] = a[index];
-    }
-
-    for (i = 0; i < n; i++) {
-        a[i] = b[i];
-    }
-}
-
-void output(int *a, int n) {
-    int i;
-    for (i = 0; i < n; i++) {
-        printf("%d", a[i]);
-        if (i < n - 1) {
-            printf(" ");
-        }
-    }
-    printf("\n");
-}
+        a[(*len)++] = val;*]()
