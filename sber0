@@ -4,24 +4,21 @@
 
 void sum(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
 void sub(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
-
-int input(int *a, int *len);
-void output(int *a, int len);
-int is_greater_or_equal(int *a, int len1, int *b, int len2);
+int input(int *buff, int *len);
+void output(int *buff, int len);
+int compare(int *a, int len1, int *b, int len2);
 
 int main() {
-    int buff1[LEN], buff2[LEN];
-    int res_sum[LEN + 1], len_sum;
-    int res_sub[LEN], len_sub;
-    int len1, len2;
+    int a[LEN], b[LEN], sum_res[LEN + 1], sub_res[LEN];
+    int len1 = 0, len2 = 0, len_sum = 0, len_sub = 0;
 
-    if (input(buff1, &len1) && input(buff2, &len2)) {
-        sum(buff1, len1, buff2, len2, res_sum, &len_sum);
-        output(res_sum, len_sum);
+    if (input(a, &len1) && input(b, &len2)) {
+        sum(a, len1, b, len2, sum_res, &len_sum);
+        output(sum_res, len_sum);
 
-        if (is_greater_or_equal(buff1, len1, buff2, len2)) {
-            sub(buff1, len1, buff2, len2, res_sub, &len_sub);
-            output(res_sub, len_sub);
+        if (compare(a, len1, b, len2)) {
+            sub(a, len1, b, len2, sub_res, &len_sub);
+            output(sub_res, len_sub);
         } else {
             printf("n/a\n");
         }
@@ -32,13 +29,99 @@ int main() {
     return 0;
 }
 
-int input(int *a, int *len) {
-    int val, ok = 1;
+int input(int *buff, int *len) {
+    int temp, result = 1;
     char c;
     *len = 0;
 
-    while (scanf("%d", &val) == 1) {
-        if (val < 0 || val > 9 || *len >= LEN) {
-            ok = 0;
+    while (scanf("%d", &temp) == 1 && temp >= 0 && temp <= 9) {
+        if (*len >= LEN) {
+            result = 0;
         }
-        a[(*len)++] = val;*]()
+        buff[(*len)++] = temp;
+    }
+
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t') {
+            result = 0;
+        }
+    }
+
+    return result && *len > 0;
+}
+
+void output(int *buff, int len) {
+    int i = 0;
+    while (i < len - 1 && buff[i] == 0) {
+        i++;
+    }
+
+    for (; i < len; i++) {
+        printf("%d", buff[i]);
+        if (i < len - 1) {
+            printf(" ");
+        }
+    }
+    printf("\n");
+}
+
+// a + b → result
+void sum(int *a, int len1, int *b, int len2, int *res, int *res_len) {
+    int i = len1 - 1;
+    int j = len2 - 1;
+    int k = (len1 > len2 ? len1 : len2);
+    int carry = 0;
+    int pos = k;
+
+    for (int x = 0; x <= k; x++) res[x] = 0;
+
+    while (i >= 0 || j >= 0 || carry) {
+        int total = carry;
+        if (i >= 0) total += a[i--];
+        if (j >= 0) total += b[j--];
+        res[pos--] = total % 10;
+        carry = total / 10;
+    }
+
+    *res_len = (carry ? k + 1 : k);
+
+    for (int x = 0; x <= k; x++) {
+        res[x] = res[x + (carry ? 0 : 1)];
+    }
+}
+
+// сравнение: возвращает 1 если a ≥ b
+int compare(int *a, int len1, int *b, int len2) {
+    if (len1 > len2) return 1;
+    if (len1 < len2) return 0;
+
+    for (int i = 0; i < len1; i++) {
+        if (a[i] > b[i]) return 1;
+        if (a[i] < b[i]) return 0;
+    }
+    return 1;
+}
+
+// a - b → result (если a ≥ b)
+void sub(int *a, int len1, int *b, int len2, int *res, int *res_len) {
+    int i = len1 - 1;
+    int j = len2 - 1;
+    int k = len1 - 1;
+    int borrow = 0;
+
+    while (k >= 0) {
+        int digit = a[i--] - borrow;
+        if (j >= 0) digit -= b[j--];
+
+        if (digit < 0) {
+            digit += 10;
+            borrow = 1;
+        } else {
+            borrow = 0;
+        }
+
+        res[k--] = digit;
+    }
+
+    *res_len = len1;
+}
