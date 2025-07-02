@@ -1,3 +1,7 @@
+gcc -Wall -Wextra -Werror -std=c99 -fsanitize=address src/sort.c -o main.out
+./main.out
+
+
 #include <math.h>
 #include <stdio.h>
 
