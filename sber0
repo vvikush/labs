@@ -1,73 +1,216 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int read(int *a, int size);
-void sort(int *a, int size);
-void print(int *a, int size);
+#define MAX_N 100
+#define MAX_M 100
+
+int input_static(int matrix[MAX_N][MAX_M], int *n, int *m);
+int input_dynamic_1(int ***matrix, int *n, int *m);
+int input_dynamic_2(int ***matrix, int *n, int *m);
+int input_dynamic_3(int ***matrix, int *n, int *m);
+void transform(int *buf, int **matrix, int n, int m);
+void reset_input();
+void output_static(int matrix[MAX_N][MAX_M], int n, int m);
+void output(int **matrix, int n, int m);
+void free_matrix(int **matrix, int n);
 
 int main(void) {
-    int n;
-    int end = 1;
-    int *a = NULL;
+    int type, n = 0, m = 0, success = 1;
+    int matrix_static[MAX_N][MAX_M];
+    int *buf_static[MAX_N];
+    int **matrix = NULL;
 
-    if (scanf("%d", &n) != 1 || n <= 0) {
-        end = 0;
+    if (scanf("%d", &type) != 1) {
+        success = 0;
     } else {
-        a = (int *)malloc(n * sizeof(int));
-        if (a == NULL) {
-            end = 0;
+        if (type == 1) {
+            success = input_static(matrix_static, &n, &m);
+        } else if (type == 2) {
+            success = input_dynamic_1(&matrix, &n, &m);
+        } else if (type == 3) {
+            success = input_dynamic_2(&matrix, &n, &m);
+        } else if (type == 4) {
+            success = input_dynamic_3(&matrix, &n, &m);
+        } else {
+            success = 0;
         }
     }
 
-    if (end) {
-        if (read(a, n)) {
-            sort(a, n);
-            print(a, n);
+    if (success) {
+        if (type == 1) {
+            output_static(matrix_static, n, m);
         } else {
-            printf("n/a");
+            output(matrix, n, m);
+            free_matrix(matrix, n);
         }
     } else {
         printf("n/a");
     }
 
-    free(a);
     return 0;
 }
 
-int read(int *a, int size) {
-    int k, end = 1;
-    char c;
-    for (int i = 0; i < size; i++) {
-        if (scanf("%d", &k) != 1) {
-            end = 0;
-        }
-        a[i] = k;
+int input_static(int matrix[MAX_N][MAX_M], int *n, int *m) {
+    int ok = 1, c;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0 || *n > MAX_N || *m > MAX_M) {
+        ok = 0;
     }
-    while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') end = 0;
-    }
-    return end;
-}
-
-void sort(int *a, int size) {
-    int k;
-    for (int i = 0; i < size - 1; i++) {
-        for (int j = 0; j < size - 1 - i; j++) {
-            if (a[j] > a[j + 1]) {
-                k = a[j];
-                a[j] = a[j + 1];
-                a[j + 1] = k;
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
+            if (scanf("%d", &matrix[i][j]) != 1) {
+                ok = 0;
             }
         }
     }
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t') {
+            ok = 0;
+        }
+    }
+    return ok;
 }
 
-void print(int *a, int size) {
-    for (int i = 0; i < size; i++) {
-        printf("%d", a[i]);
-        if (i < size - 1) {
-            printf(" ");
+int input_dynamic_1(int ***matrix, int *n, int *m) {
+    int ok = 1, c;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
+        ok = 0;
+    }
+    if (ok) {
+        *matrix = malloc(*n * sizeof(int *));
+        if (*matrix == NULL) {
+            ok = 0;
+        }
+    }
+    for (int i = 0; i < *n && ok; i++) {
+        (*matrix)[i] = malloc(*m * sizeof(int));
+        if ((*matrix)[i] == NULL) {
+            ok = 0;
+        }
+    }
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
+            if (scanf("%d", &(*matrix)[i][j]) != 1) {
+                ok = 0;
+            }
+        }
+    }
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t') {
+            ok = 0;
+        }
+    }
+    return ok;
+}
+
+int input_dynamic_2(int ***matrix, int *n, int *m) {
+    int ok = 1, c;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
+        ok = 0;
+    }
+    if (ok) {
+        *matrix = malloc(*n * sizeof(int *) + *n * *m * sizeof(int));
+        if (*matrix == NULL) {
+            ok = 0;
+        }
+    }
+    if (ok) {
+        int *data = (int *)(*matrix + *n);
+        for (int i = 0; i < *n; i++) {
+            (*matrix)[i] = data + i * (*m);
+        }
+    }
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
+            if (scanf("%d", &(*matrix)[i][j]) != 1) {
+                ok = 0;
+            }
+        }
+    }
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t') {
+            ok = 0;
+        }
+    }
+    return ok;
+}
+
+int input_dynamic_3(int ***matrix, int *n, int *m) {
+    int ok = 1, c;
+    int *buf = NULL;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
+        ok = 0;
+    }
+    if (ok) {
+        *matrix = malloc(*n * sizeof(int *));
+        buf = malloc(*n * *m * sizeof(int));
+        if (*matrix == NULL || buf == NULL) {
+            ok = 0;
+        }
+    }
+    if (ok) {
+        transform(buf, *matrix, *n, *m);
+        for (int i = 0; i < *n && ok; i++) {
+            for (int j = 0; j < *m && ok; j++) {
+                if (scanf("%d", &(*matrix)[i][j]) != 1) {
+                    ok = 0;
+                }
+            }
+        }
+    }
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t') {
+            ok = 0;
+        }
+    }
+    if (!ok) {
+        free(buf);
+        free(*matrix);
+    }
+    return ok;
+}
+
+void transform(int *buf, int **matrix, int n, int m) {
+    for (int i = 0; i < n; i++) {
+        matrix[i] = buf + i * m;
+    }
+}
+
+void output_static(int matrix[MAX_N][MAX_M], int n, int m) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d", matrix[i][j]);
+            if (j < m - 1) {
+                printf(" ");
+            }
+        }
+        if (i < n - 1) {
+            printf("\n");
         }
     }
 }
 
+void output(int **matrix, int n, int m) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d", matrix[i][j]);
+            if (j < m - 1) {
+                printf(" ");
+            }
+        }
+        if (i < n - 1) {
+            printf("\n");
+        }
+    }
+}
+
+void free_matrix(int **matrix, int n) {
+    if (matrix != NULL) {
+        free(matrix[0]); // valid for dynamic_2 and dynamic_3
+        for (int i = 0; i < n; i++) {
+            if (matrix[i] != NULL) {
+                free(matrix[i]); // valid for dynamic_1
+            }
+        }
+        free(matrix);
+    }
+}
