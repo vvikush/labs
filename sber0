@@ -1,127 +1,67 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#define LEN 100
+int read(int *a, int size);
+void sort(int *a, int size);
+void print(int *a, int size);
 
-void sum(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
-void sub(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
-int input(int *buff, int *len);
-void output(int *buff, int len);
-int compare(int *a, int len1, int *b, int len2);
-
-int main() {
-    int a[LEN], b[LEN], sum_res[LEN + 1], sub_res[LEN];
-    int len1 = 0, len2 = 0, len_sum = 0, len_sub = 0;
-
-    if (input(a, &len1) && input(b, &len2)) {
-        sum(a, len1, b, len2, sum_res, &len_sum);
-        output(sum_res, len_sum);
-
-        if (compare(a, len1, b, len2)) {
-            sub(a, len1, b, len2, sub_res, &len_sub);
-            output(sub_res, len_sub);
-        } else {
-            printf("n/a\n");
-        }
-    } else {
-        printf("n/a\n");
+int main(void) {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) {
+        printf("n/a");
+        return 0;
     }
 
+    int *a = (int *)malloc(n * sizeof(int));
+    if (a == NULL) {
+        printf("n/a");
+        return 0;
+    }
+
+    if (read(a, n)) {
+        sort(a, n);
+        print(a, n);
+    } else {
+        printf("n/a");
+    }
+
+    free(a);
     return 0;
 }
 
-int input(int *buff, int *len) {
-    int temp, result = 1;
+int read(int *a, int size) {
+    int k, end = 1;
     char c;
-    *len = 0;
-
-    while (scanf("%d", &temp) == 1 && temp >= 0 && temp <= 9) {
-        if (*len >= LEN) {
-            result = 0;
+    for (int i = 0; i < size; i++) {
+        if (scanf("%d", &k) != 1) {
+            end = 0;
         }
-        buff[(*len)++] = temp;
+        a[i] = k;
     }
-
     while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            result = 0;
-        }
+        if (c != ' ' && c != '\t') end = 0;
     }
-
-    return result && *len > 0;
+    return end;
 }
 
-void output(int *buff, int len) {
-    int i = 0;
-    while (i < len - 1 && buff[i] == 0) {
-        i++;
+void sort(int *a, int size) {
+    int k;
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - 1 - i; j++) {
+            if (a[j] > a[j + 1]) {
+                k = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = k;
+            }
+        }
     }
+}
 
-    for (; i < len; i++) {
-        printf("%d", buff[i]);
-        if (i < len - 1) {
+void print(int *a, int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d", a[i]);
+        if (i < size - 1) {
             printf(" ");
         }
     }
-    printf("\n");
-}
-
-// a + b → result
-void sum(int *a, int len1, int *b, int len2, int *res, int *res_len) {
-    int i = len1 - 1;
-    int j = len2 - 1;
-    int k = (len1 > len2 ? len1 : len2);
-    int carry = 0;
-    int pos = k;
-
-    for (int x = 0; x <= k; x++) res[x] = 0;
-
-    while (i >= 0 || j >= 0 || carry) {
-        int total = carry;
-        if (i >= 0) total += a[i--];
-        if (j >= 0) total += b[j--];
-        res[pos--] = total % 10;
-        carry = total / 10;
-    }
-
-    *res_len = (carry ? k + 1 : k);
-
-    for (int x = 0; x <= k; x++) {
-        res[x] = res[x + (carry ? 0 : 1)];
-    }
-}
-
-// сравнение: возвращает 1 если a ≥ b
-int compare(int *a, int len1, int *b, int len2) {
-    if (len1 > len2) return 1;
-    if (len1 < len2) return 0;
-
-    for (int i = 0; i < len1; i++) {
-        if (a[i] > b[i]) return 1;
-        if (a[i] < b[i]) return 0;
-    }
-    return 1;
-}
-
-// a - b → result (если a ≥ b)
-void sub(int *a, int len1, int *b, int len2, int *res, int *res_len) {
-    int i = len1 - 1;
-    int j = len2 - 1;
-    int k = len1 - 1;
-    int borrow = 0;
-
-    while (k >= 0) {
-        int digit = a[i--] - borrow;
-        if (j >= 0) digit -= b[j--];
-
-        if (digit < 0) {
-            digit += 10;
-            borrow = 1;
-        } else {
-            borrow = 0;
-        }
-
-        res[k--] = digit;
-    }
-
-    *res_len = len1;
 }
