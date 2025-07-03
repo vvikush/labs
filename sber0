@@ -1,308 +1,202 @@
-/*------------------------------------
-    Здравствуй, человек!
-    Чтобы получить ключ
-    поработай с комментариями.
--------------------------------------*/
 #include <stdio.h>
+#include <stdlib.h>
 
-#define MAX_SIZE 10
+#define MAX_N 100
+#define MAX_M 100
 
-void input(int *buffer, int *length);
-void output(int *buffer, int length);
-int sum_numbers(int *buffer, int length);
-int find_numbers(int *buffer, int length, int number, int *numbers);
+int input_static(int matrix[MAX_N][MAX_M], int *n, int *m);
+int input_dynamic(int ***matrix, int *n, int *m);
+void output_static(int matrix[MAX_N][MAX_M], int n, int m);
+void output(int **matrix, int n, int m);
+void find_max_by_rows(int **matrix, int n, int m, int *result);
+void find_min_by_cols(int **matrix, int n, int m, int *result);
+void transform(int *buf, int **matrix, int n, int m);
+void free_matrix(int **matrix, int n);
 
-/*------------------------------------
-    Функция получает массив данных
-    через stdin.
-    Выдает в stdout особую сумму
-    и сформированный массив
-    специальных элементов
-    (выбранных с помощью найденной суммы):
-    это и будет частью ключа
--------------------------------------*/
 int main(void) {
-    int buffer[MAX_SIZE];
-    int a[MAX_SIZE];
-    int length, sum, count;
+    int type, n = 0, m = 0, ok = 1;
+    int matrix_static[MAX_N][MAX_M];
+    int *matrix_buf[MAX_N];
+    int *max_in_rows = NULL;
+    int *min_in_cols = NULL;
+    int **matrix = NULL;
 
-    input(buffer, &length);
-
-    sum = sum_numbers(buffer, length);
-
-    if (sum <= 0) {
-        printf("n/a\n");
+    if (scanf("%d", &type) != 1) {
+        ok = 0;
     } else {
-        count = find_numbers(buffer, length, sum, a);
-        if (count > 0) {
-            printf("%d\n", sum);
-            output(a, count);
+        if (type == 1) {
+            ok = input_static(matrix_static, &n, &m);
+        } else if (type == 2) {
+            ok = input_dynamic(&matrix, &n, &m);
         } else {
-            printf("n/a\n");
+            ok = 0;
         }
+    }
+
+    if (ok) {
+        max_in_rows = malloc(n * sizeof(int));
+        min_in_cols = malloc(m * sizeof(int));
+        if (max_in_rows == NULL || min_in_cols == NULL) {
+            ok = 0;
+        }
+    }
+
+    if (ok) {
+        if (type == 1) {
+            for (int i = 0; i < n; i++) {
+                matrix_buf[i] = matrix_static[i];
+            }
+            output_static(matrix_static, n, m);
+            find_max_by_rows(matrix_buf, n, m, max_in_rows);
+            find_min_by_cols(matrix_buf, n, m, min_in_cols);
+        } else {
+            output(matrix, n, m);
+            find_max_by_rows(matrix, n, m, max_in_rows);
+            find_min_by_cols(matrix, n, m, min_in_cols);
+        }
+
+        printf("\n");
+        for (int i = 0; i < n; i++) {
+            printf("%d", max_in_rows[i]);
+            if (i < n - 1) printf(" ");
+        }
+        printf("\n");
+        for (int j = 0; j < m; j++) {
+            printf("%d", min_in_cols[j]);
+            if (j < m - 1) printf(" ");
+        }
+    } else {
+        printf("n/a");
+    }
+
+    free(max_in_rows);
+    free(min_in_cols);
+    if (type == 2) {
+        free_matrix(matrix, n);
     }
 
     return 0;
 }
 
-/*------------------------------------
-    Функция должна находить
-    сумму четных элементов
-    с 0-й позиции.
--------------------------------------*/
-int sum_numbers(int *buffer, int length) {
-    int sum = 0;
-    for (int i = 0; i < length; i++) {
-        if (buffer[i] % 2 == 0 && buffer[i] != 0) {
-            sum = sum + buffer[i];
+int input_static(int matrix[MAX_N][MAX_M], int *n, int *m) {
+    int ok = 1, c;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0 || *n > MAX_N || *m > MAX_M) {
+        ok = 0;
+    }
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
+            if (scanf("%d", &matrix[i][j]) != 1) {
+                ok = 0;
+            }
         }
     }
-    return sum;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (c != ' ' && c != '\t') {
+            ok = 0;
+        }
+    }
+    return ok;
 }
 
-/*------------------------------------
-    Функция должна находить
-    все элементы, на которые нацело
-    делится переданное число и
-    записывает их в выходной массив.
--------------------------------------*/
-int find_numbers(int *buffer, int length, int number, int *numbers) {
-    int count = 0;
-    for (int i = 0; i < length; i++) {
-        if (buffer[i] != 0 && number % buffer[i] == 0) {
-            numbers[count] = buffer[i];
-            count++;
-        }
-    }
-    return count;
-}
+int input_dynamic(int ***matrix, int *n, int *m) {
+    int ok = 1, c;
+    int *buf = NULL;
 
-/*------------------------------------
-    Функция ввода данных из stdin.
-    Сначала считывает длину массива,
-    затем — сам массив.
-    Проверяет корректность.
-    В случае ошибки длина будет = 0.
--------------------------------------*/
-void input(int *buffer, int *length) {
-    int i, k, result = 1;
-    char c;
-
-    if (scanf("%d", length) != 1 || *length <= 0 || *length > MAX_SIZE) {
-        result = 0;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
+        ok = 0;
     }
 
-    for (i = 0; i < *length && result; i++) {
-        if (scanf("%d", &k) != 1) {
-            result = 0;
+    if (ok) {
+        *matrix = malloc(*n * sizeof(int *));
+        buf = malloc(*n * *m * sizeof(int));
+        if (*matrix == NULL || buf == NULL) {
+            ok = 0;
+        } else {
+            transform(buf, *matrix, *n, *m);
         }
-        buffer[i] = k;
+    }
+
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
+            if (scanf("%d", &(*matrix)[i][j]) != 1) {
+                ok = 0;
+            }
+        }
     }
 
     while ((c = getchar()) != '\n' && c != EOF) {
         if (c != ' ' && c != '\t') {
-            result = 0;
+            ok = 0;
         }
     }
 
-    if (!result) {
-        *length = 0;
+    if (!ok) {
+        free(buf);
+        free(*matrix);
+    }
+
+    return ok;
+}
+
+void transform(int *buf, int **matrix, int n, int m) {
+    for (int i = 0; i < n; i++) {
+        matrix[i] = buf + i * m;
     }
 }
 
-/*------------------------------------
-    Функция вывода массива в stdout
-    через пробел.
--------------------------------------*/
-void output(int *buffer, int length) {
-    for (int i = 0; i < length; i++) {
-        printf("%d", buffer[i]);
-        if (i < length - 1) {
-            printf(" ");
+void output_static(int matrix[MAX_N][MAX_M], int n, int m) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d", matrix[i][j]);
+            if (j < m - 1) {
+                printf(" ");
+            }
         }
-    }
-    printf("\n");
-}
-
-
-
-
-
-
-
-
-#include <stdio.h>
-
-#define MAX_SIZE 10
-
-int input(int *a, int *n, int *shift);
-void shift1(int *a, int n, int shift);
-void output(int *a, int n);
-
-int main(void) {
-    int a[MAX_SIZE];
-    int n, shift;
-
-    if (input(a, &n, &shift)) {
-        shift1(a, n, shift);
-        output(a, n);
-    } else {
-        printf("n/a\n");
-    }
-
-    return 0;
-}
-
-int input(int *a, int *n, int *shift) {
-    int i, k, result = 1;
-    char c;
-
-    if (scanf("%d", n) != 1 || *n <= 0 || *n > MAX_SIZE) {
-        result = 0;
-    }
-
-    for (i = 0; i < *n && result; i++) {
-        if (scanf("%d", &k) != 1) {
-            result = 0;
-        }
-        a[i] = k;
-    }
-
-    if (result && scanf("%d", shift) != 1) {
-        result = 0;
-    }
-
-    while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            result = 0;
-        }
-    }
-
-    return result;
-}
-
-void shift1(int *a, int n, int shift) {
-    int b[MAX_SIZE];
-    int i, good_shift;
-
-    if (shift >= 0) {
-        good_shift = shift % n;
-    } else {
-        good_shift = n + (shift % n);
-        if (good_shift == n) {
-            good_shift = 0;
-        }
-    }
-
-    for (i = 0; i < n; i++) {
-        int index = (i + good_shift) % n;
-        b[i] = a[index];
-    }
-
-    for (i = 0; i < n; i++) {
-        a[i] = b[i];
-    }
-}
-
-void output(int *a, int n) {
-    int i;
-    for (i = 0; i < n; i++) {
-        printf("%d", a[i]);
         if (i < n - 1) {
-            printf(" ");
+            printf("\n");
         }
     }
-    printf("\n");
 }
 
-
-
-
-
-
-
-
-
-#include <stdio.h>
-
-#define LEN 100
-
-void sum(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
-void sub(int *buff1, int len1, int *buff2, int len2, int *result, int *result_length);
-
-int input(int *buff, int *len);
-void output(int *buff, int len);
-int compare(int *a, int len1, int *b, int len2);
-
-int main() {
-    int a[LEN], b[LEN], sum_res[LEN + 1], sub_res[LEN];
-    int len1 = 0, len2 = 0, len_sum = 0, len_sub = 0;
-
-    if (input(a, &len1) && input(b, &len2)) {
-        sum(a, len1, b, len2, sum_res, &len_sum);
-        output(sum_res, len_sum);
-
-        if (compare(a, len1, b, len2)) {
-            sub(a, len1, b, len2, sub_res, &len_sub);
-            output(sub_res, len_sub);
-        } else {
-            printf("n/a\n");
+void output(int **matrix, int n, int m) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d", matrix[i][j]);
+            if (j < m - 1) {
+                printf(" ");
+            }
         }
-    } else {
-        printf("n/a\n");
-    }
-
-    return 0;
-}
-
-int input(int *buff, int *len) {
-    int k, end = 1;
-    char c;
-    *len = 0;
-
-    while (scanf("%d", &k) == 1 && k >= 0 && k <= 9) {
-        if (*len >= LEN) {
-            end = 0;
-        }
-        buff[(*len)++] = k;
-    }
-
-    while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            end = 0;
+        if (i < n - 1) {
+            printf("\n");
         }
     }
-
-    return end && *len > 0;
 }
 
-void output(int *buff, int len) {
-    int i = 0;
-    while (i < len - 1 && buff[i] == 0) {
-        i++;
-    }
-
-    for (; i < len; i++) {
-        printf("%d", buff[i]);
-        if (i < len - 1) {
-            printf(" ");
+void find_max_by_rows(int **matrix, int n, int m, int *result) {
+    for (int i = 0; i < n; i++) {
+        result[i] = matrix[i][0];
+        for (int j = 1; j < m; j++) {
+            if (matrix[i][j] > result[i]) {
+                result[i] = matrix[i][j];
+            }
         }
     }
-    printf("\n");
 }
 
-void sum(int *a, int len1, int *b, int len2, int *res, int *res_len) {}
-
-int compare(int *a, int len1, int *b, int len2) {
-    int end = 1;
-    if (len1 > len2) end = 1;
-    if (len1 < len2) end = 0;
-
-    for (int i = 0; i < len1; i++) {
-        if (a[i] > b[i]) end = 1;
-        if (a[i] < b[i]) end = 0;
+void find_min_by_cols(int **matrix, int n, int m, int *result) {
+    for (int j = 0; j < m; j++) {
+        result[j] = matrix[0][j];
+        for (int i = 1; i < n; i++) {
+            if (matrix[i][j] < result[j]) {
+                result[j] = matrix[i][j];
+            }
+        }
     }
-    return end;
 }
 
-void sub(int *a, int len1, int *b, int len2, int *res, int *res_len) {}
+void free_matrix(int **matrix, int n) {
+    if (matrix != NULL && matrix[0] != NULL) {
+        free(matrix[0]);
+        free(matrix);
+    }
+}
