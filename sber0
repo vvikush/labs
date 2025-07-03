@@ -1,3 +1,30 @@
+int main(void) {
+    int n, status = 0;
+    int *a = NULL;
+
+    if (scanf("%d", &n) == 1 && n > 0) {
+        a = (int *)malloc(n * sizeof(int));
+        if (a != NULL) {
+            if (read(a, n)) {
+                sort(a, n);
+                print(a, n);
+                status = 1;
+            } else {
+                printf("n/a");
+            }
+        } else {
+            printf("n/a");
+        }
+    } else {
+        printf("n/a");
+    }
+
+    free(a);
+    return 0;
+}
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 
