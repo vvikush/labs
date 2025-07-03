@@ -13,231 +13,159 @@ void output(int **matrix, int n, int m);
 void free_matrix(int **matrix, int n, int type);
 
 int main(void) {
-    int type, n = 0, m = 0, end = 1;
-    int buf_static[MAX_N][MAX_M];
     int *matrix_static[MAX_N];
+    int buf_static[MAX_N * MAX_M];
     int **matrix = NULL;
+    int n = 0, m = 0, type = 0;
+    int success = 1;
 
     if (scanf("%d", &type) != 1) {
-        end = 0;
-    } else {
+        success = 0;
+    }
+
+    if (success) {
         if (type == 1) {
-            transform(&buf_static[0][0], matrix_static, MAX_N, MAX_M);
-            end = input_static(matrix_static, &n, &m);
+            transform(buf_static, matrix_static, MAX_N, MAX_M);
+            success = input_static(matrix_static, &n, &m);
             matrix = matrix_static;
         } else if (type == 2) {
-            end = input_dynamic_1(&matrix, &n, &m);
+            success = input_dynamic_1(&matrix, &n, &m);
         } else if (type == 3) {
-            end = input_dynamic_2(&matrix, &n, &m);
+            success = input_dynamic_2(&matrix, &n, &m);
         } else if (type == 4) {
-            end = input_dynamic_3(&matrix, &n, &m);
+            success = input_dynamic_3(&matrix, &n, &m);
         } else {
-            end = 0;
+            success = 0;
         }
     }
 
-    if (end) {
+    if (success) {
         output(matrix, n, m);
     } else {
         printf("n/a");
     }
 
-    if (end && type >= 2 && type <= 4) {
+    if (type == 2 || type == 3 || type == 4) {
         free_matrix(matrix, n, type);
     }
 
     return 0;
 }
 
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#define MAX_N 100
-#define MAX_M 100
-
-int input_static(int matrix[MAX_N][MAX_M], int *n, int *m);
-int input_dynamic_1(int ***matrix, int *n, int *m);
-int input_dynamic_2(int ***matrix, int *n, int *m);
-int input_dynamic_3(int ***matrix, int *n, int *m);
-void transform(int *buf, int **matrix, int n, int m);
-void reset_input();
-void output_static(int matrix[MAX_N][MAX_M], int n, int m);
-void output(int **matrix, int n, int m);
-void free_matrix(int **matrix, int n);
-
-int main(void) {
-    int type, n = 0, m = 0, end = 1;
-    int matrix_static[MAX_N][MAX_M];
-    int *buf_static[MAX_N];
-    int **matrix = NULL;
-
-    if (scanf("%d", &type) != 1) {
-        end = 0;
-    } else {
-        if (type == 1) {
-            end = input_static(matrix_static, &n, &m);
-        } else if (type == 2) {
-            end = input_dynamic_1(&matrix, &n, &m);
-        } else if (type == 3) {
-            end = input_dynamic_2(&matrix, &n, &m);
-        } else if (type == 4) {
-            end = input_dynamic_3(&matrix, &n, &m);
-        } else {
-            end = 0;
-        }
+int input_static(int **matrix, int *n, int *m) {
+    int ok = 1, c;
+    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *n > MAX_N || *m <= 0 || *m > MAX_M) {
+        ok = 0;
     }
-
-    if (end) {
-        if (type == 1) {
-            output_static(matrix_static, n, m);
-        } else {
-            output(matrix, n, m);
-            free_matrix(matrix, n);
-        }
-    } else {
-        printf("n/a");
-    }
-
-    return 0;
-}
-
-int input_static(int matrix[MAX_N][MAX_M], int *n, int *m) {
-    int end = 1, c;
-    if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0 || *n > MAX_N || *m > MAX_M) {
-        end = 0;
-    }
-    for (int i = 0; i < *n && end; i++) {
-        for (int j = 0; j < *m && end; j++) {
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
             if (scanf("%d", &matrix[i][j]) != 1) {
-                end = 0;
+                ok = 0;
             }
         }
     }
     while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            end = 0;
-        }
+        if (c != ' ' && c != '\t') ok = 0;
     }
-    return end;
+    return ok;
 }
 
 int input_dynamic_1(int ***matrix, int *n, int *m) {
-    int end = 1, c;
+    int ok = 1, c;
     if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
-        end = 0;
+        ok = 0;
     }
-    if (end) {
+    if (ok) {
         *matrix = malloc(*n * sizeof(int *));
         if (*matrix == NULL) {
-            end = 0;
+            ok = 0;
         }
     }
-    for (int i = 0; i < *n && end; i++) {
+    for (int i = 0; i < *n && ok; i++) {
         (*matrix)[i] = malloc(*m * sizeof(int));
         if ((*matrix)[i] == NULL) {
-            end = 0;
+            ok = 0;
         }
     }
-    for (int i = 0; i < *n && end; i++) {
-        for (int j = 0; j < *m && end; j++) {
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
             if (scanf("%d", &(*matrix)[i][j]) != 1) {
-                end = 0;
+                ok = 0;
             }
         }
     }
     while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            end = 0;
-        }
+        if (c != ' ' && c != '\t') ok = 0;
     }
-    return end;
+    return ok;
 }
 
 int input_dynamic_2(int ***matrix, int *n, int *m) {
-    int end = 1, c;
+    int ok = 1, c;
     if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
-        end = 0;
+        ok = 0;
     }
-    if (end) {
+    if (ok) {
         *matrix = malloc(*n * sizeof(int *) + *n * *m * sizeof(int));
         if (*matrix == NULL) {
-            end = 0;
+            ok = 0;
         }
     }
-    if (end) {
+    if (ok) {
         int *data = (int *)(*matrix + *n);
         for (int i = 0; i < *n; i++) {
             (*matrix)[i] = data + i * (*m);
         }
     }
-    for (int i = 0; i < *n && end; i++) {
-        for (int j = 0; j < *m && end; j++) {
+    for (int i = 0; i < *n && ok; i++) {
+        for (int j = 0; j < *m && ok; j++) {
             if (scanf("%d", &(*matrix)[i][j]) != 1) {
-                end = 0;
+                ok = 0;
             }
         }
     }
     while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            end = 0;
-        }
+        if (c != ' ' && c != '\t') ok = 0;
     }
-    return end;
+    return ok;
 }
 
 int input_dynamic_3(int ***matrix, int *n, int *m) {
-    int end = 1, c;
+    int ok = 1, c;
     int *buf = NULL;
     if (scanf("%d%d", n, m) != 2 || *n <= 0 || *m <= 0) {
-        end = 0;
+        ok = 0;
     }
-    if (end) {
+    if (ok) {
         *matrix = malloc(*n * sizeof(int *));
         buf = malloc(*n * *m * sizeof(int));
         if (*matrix == NULL || buf == NULL) {
-            end = 0;
+            ok = 0;
         }
     }
-    if (end) {
+    if (ok) {
         transform(buf, *matrix, *n, *m);
-        for (int i = 0; i < *n && end; i++) {
-            for (int j = 0; j < *m && end; j++) {
+        for (int i = 0; i < *n && ok; i++) {
+            for (int j = 0; j < *m && ok; j++) {
                 if (scanf("%d", &(*matrix)[i][j]) != 1) {
-                    end = 0;
+                    ok = 0;
                 }
             }
         }
     }
     while ((c = getchar()) != '\n' && c != EOF) {
-        if (c != ' ' && c != '\t') {
-            end = 0;
-        }
+        if (c != ' ' && c != '\t') ok = 0;
     }
-    if (!end) {
+    if (!ok) {
         free(buf);
         free(*matrix);
     }
-    return end;
+    return ok;
 }
 
 void transform(int *buf, int **matrix, int n, int m) {
     for (int i = 0; i < n; i++) {
         matrix[i] = buf + i * m;
-    }
-}
-
-void output_static(int matrix[MAX_N][MAX_M], int n, int m) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            printf("%d", matrix[i][j]);
-            if (j < m - 1) {
-                printf(" ");
-            }
-        }
-        if (i < n - 1) {
-            printf("\n");
-        }
     }
 }
 
@@ -255,16 +183,16 @@ void output(int **matrix, int n, int m) {
     }
 }
 
-void free_matrix(int **matrix, int n) {
-    if (matrix != NULL) {
-        free(matrix[0]);
+void free_matrix(int **matrix, int n, int type) {
+    if (type == 2) {
         for (int i = 0; i < n; i++) {
-            if (matrix[i] != NULL) {
-                free(matrix[i]);
-            }
+            free(matrix[i]);
         }
+        free(matrix);
+    } else if (type == 3) {
+        free(matrix);
+    } else if (type == 4) {
+        free(matrix[0]);
         free(matrix);
     }
 }
-
-
