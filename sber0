@@ -18,9 +18,11 @@ int main(void) {
         return 0;
     }
 
+    int result = 0;
     if (read(a, n)) {
         sort(a, n);
         print(a, n);
+        result = 1;
     } else {
         printf("n/a");
     }
