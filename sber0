@@ -1,3 +1,141 @@
+
+#include <ncurses.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#define ROWS 25
+#define COLUMNS 80
+#define MIN_SPEED 20
+#define MAX_SPEED 1000
+
+int work_game();
+void render(int mass[ROWS][COLUMNS], int speed);
+int check_neighbour(int mass[ROWS][COLUMNS], int i, int j);
+void next_step(int mass[ROWS][COLUMNS]);
+int handle_input(int *psp);
+int read_field(int field[ROWS][COLUMNS]);
+
+int main() {
+    return work_game();
+}
+
+int work_game() {
+    int field[ROWS][COLUMNS];
+    int speed = 100;
+
+    // чтение поля из stdin
+    if (read_field(field) != 0) {
+        printf("n/a\n");
+        return 1;
+    }
+
+    // перенаправляем stdin обратно на терминал для getch()
+    freopen("/dev/tty", "r", stdin);
+
+    // инициализация ncurses
+    initscr();
+    cbreak();
+    noecho();
+    nodelay(stdscr, TRUE);
+
+    int running = 1;
+    while (running) {
+        render(field, speed);         // отрисовка поля и скорости
+        next_step(field);             // переход к следующему поколению
+        running = handle_input(&speed); // обработка ввода пользователя
+        napms(speed);                 // пауза (в миллисекундах)
+    }
+
+    endwin(); // завершение ncurses
+    return 0;
+}
+
+void render(int mass[ROWS][COLUMNS], int speed) {
+    clear();
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLUMNS; j++) {
+            mvaddch(i, j, mass[i][j] ? '#' : '.');
+        }
+    }
+
+    // отображение текущей скорости в правом верхнем углу
+    mvprintw(0, COLUMNS - 20, "Speed: %d ms", speed);
+
+    // подсказка по управлению (внизу экрана)
+    mvprintw(ROWS - 1, 0, "[A] faster  [Z] slower  [SPACE] quit");
+
+    refresh();
+}
+
+int check_neighbour(int mass[ROWS][COLUMNS], int i, int j) {
+    int count = 0;
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) continue;
+            int ni = (i + dx + ROWS) % ROWS;
+            int nj = (j + dy + COLUMNS) % COLUMNS;
+            count += mass[ni][nj];
+        }
+    }
+    return (mass[i][j] && (count == 2 || count == 3)) || (!mass[i][j] && count == 3);
+}
+
+void next_step(int mass[ROWS][COLUMNS]) {
+    int new_mass[ROWS][COLUMNS];
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLUMNS; j++) {
+            new_mass[i][j] = check_neighbour(mass, i, j);
+        }
+    }
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLUMNS; j++) {
+            mass[i][j] = new_mass[i][j];
+        }
+    }
+}
+
+int handle_input(int *psp) {
+    int ch = getch();
+    int flag = 1;
+
+    if (ch == ' ') {
+        flag = 0; // завершение игры
+    }
+    if (flag && (ch == 'a' || ch == 'A') && *psp > MIN_SPEED) {
+        *psp -= 20; // ускорение
+    }
+    if (flag && (ch == 'z' || ch == 'Z') && *psp < MAX_SPEED) {
+        *psp += 20; // замедление
+    }
+
+    return flag;
+}
+
+int read_field(int field[ROWS][COLUMNS]) {
+    char c;
+    int i = 0, j = 0, count = 0, FlagError = 0;
+
+    if (feof(stdin)) {
+        FlagError = 1;
+    }
+
+    while (!FlagError && (c = getchar()) != EOF) {
+        if (c == '0' || c == '1') {
+            if (i >= ROWS || j >= COLUMNS) FlagError = 1;
+            field[i][j] = c - '0';
+            j++;
+            count++;
+        } else if (c == '\n' || c == '\r') {
+            if (j != 0 && j != COLUMNS) FlagError = 1;
+            if (j == COLUMNS) { i++; j = 0; }
+        } else if (c == ' ' || c == '\t') {
+            // пропускаем пробелы и табуляции
+        } else {
+            FlagError =
+
+
+
+
 #include <stdio.h>
 
 #define N 15
