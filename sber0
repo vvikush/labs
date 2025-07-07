@@ -4,6 +4,68 @@ CFLAGS = -Wall -Wextra -Werror -Wpedantic
 BIN = bin
 
 # Папки
+DATA_MODULE = src/data_module
+DECISION = src/yet_another_decision_module
+LIBS = src/data_libs
+
+# Бинарники
+APP1 = $(BIN)/app
+APP2 = $(BIN)/decision_app
+
+# Object-файлы для первого квеста (app)
+APP1_OBJS = \
+    $(DATA_MODULE)/data_module_entry.o \
+    $(DATA_MODULE)/data_process.o \
+    $(LIBS)/data_io.o
+
+# Object-файлы для второго квеста (decision_app)
+APP2_OBJS = \
+    $(DECISION)/yet_another_decision_module_entry.o \
+    $(DECISION)/decision.o \
+    $(LIBS)/data_stat.o \
+    $(LIBS)/data_io.o
+
+# Цель по умолчанию — собрать оба
+all: app decision_app
+
+# Цель первого квеста
+app: $(APP1)
+
+$(APP1): $(APP1_OBJS)
+	@mkdir -p $(BIN)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Цель второго квеста
+decision_app: $(APP2)
+
+$(APP2): $(APP2_OBJS)
+	@mkdir -p $(BIN)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Компиляция object-файлов
+$(DATA_MODULE)/%.o: $(DATA_MODULE)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(DECISION)/%.o: $(DECISION)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(LIBS)/%.o: $(LIBS)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Очистка
+clean:
+	rm -rf $(BIN) src/*/*.o
+
+
+
+
+
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -Wpedantic
+
+BIN = bin
+
+# Папки
 DECISION = src/yet_another_decision_module
 LIBS = src/data_libs
 
