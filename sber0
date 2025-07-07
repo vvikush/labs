@@ -1,3 +1,43 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -Wpedantic
+
+BIN = bin
+
+# Папки
+DECISION = src/yet_another_decision_module
+LIBS = src/data_libs
+
+# Целевой бинарник
+APP = $(BIN)/decision_app
+
+# Объектные файлы
+OBJS = \
+    $(DECISION)/yet_another_decision_module_entry.o \
+    $(DECISION)/decision.o \
+    $(LIBS)/data_io.o \
+    $(LIBS)/data_stat.o
+
+# Основная цель по умолчанию
+all: $(APP)
+
+# Сборка приложения
+$(APP): $(OBJS)
+	@mkdir -p $(BIN)
+	$(CC) $(CFLAGS) $(OBJS) -o $(APP)
+
+# Правила компиляции объектных файлов
+$(DECISION)/%.o: $(DECISION)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(LIBS)/%.o: $(LIBS)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Чистка всех временных и бинарных файлов
+clean:
+	rm -rf $(BIN) src/*/*.o
+
+
+
 #include "data_stat.h"
 
 double max(const double *data, int n) {
