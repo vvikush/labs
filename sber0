@@ -1,6 +1,35 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -Wpedantic
 
+MODULE = src/data_module
+LIBS = src/data_libs
+BIN = bin
+APP = $(BIN)/app
+
+OBJS = \
+    $(MODULE)/data_module_entry.o \
+    $(MODULE)/data_process.o \
+    $(LIBS)/data_io.o
+
+all: $(APP)
+
+$(APP): $(OBJS)
+	@mkdir -p $(BIN)
+	$(CC) $(CFLAGS) $(OBJS) -o $(APP)
+
+$(MODULE)/%.o: $(MODULE)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(LIBS)/%.o: $(LIBS)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(OBJS) $(APP) $(BIN)
+
+
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -Wpedantic
+
 SRC = src
 LIBS = $(SRC)/data_libs
 MODULE = $(SRC)/data_module
