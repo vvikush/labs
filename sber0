@@ -27,91 +27,10 @@ clean:
 	rm -rf $(OBJS) $(APP) $(BIN)
 
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -Wpedantic
-
-SRC = src
-LIBS = $(SRC)/data_libs
-MODULE = $(SRC)/data_module
-BIN = bin
-
-APP = $(BIN)/app
-
-OBJS = \
-    $(MODULE)/data_module_entry.o \
-    $(LIBS)/data_process.o \
-    $(LIBS)/data_io.o
-
-all: $(APP)
-
-$(APP): $(OBJS)
-	@mkdir -p $(BIN)
-	$(CC) $(CFLAGS) $(OBJS) -o $(APP)
-
-$(MODULE)/%.o: $(MODULE)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(LIBS)/%.o: $(LIBS)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-clean:
-	rm -rf $(OBJS) $(APP) $(BIN)
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "../data_libs/data_process.h"
-#include "../data_libs/data_io.h"
 
-int main() {
-    double *data = NULL;
-    int n = 0;
-
-    if (input(&data, &n)) {
-        if (normalization(data, n)) {
-            output(data, n);
-        } else {
-            printf("ERROR");
-        }
-    } else {
-        printf("INPUT ERROR");
-    }
-
-    free(data);
-    return 0;
-}
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include "../data_libs/data_process.h"
-#include "../data_libs/data_io.h"
-
-int main() {
-    double *data = NULL;
-    int n = 0;
-
-    if (input(&data, &n)) {
-        if (normalization(data, n)) {
-            output(data, n);
-        } else {
-            printf("ERROR");
-        }
-    } else {
-        printf("INPUT ERROR");
-    }
-
-    free(data);
-    return 0;
-}
-#include <stdio.h>
-#include <stdlib.h>
-
-int input(double **data, int *n) {
-    if (scanf("%d", n) != 1 || *n <= 0)
-        return 0;
-
-    *data = malloc(*n * sizeof(double));
+malloc(*n * sizeof(double));
     if (!*data)
         return 0;
 
