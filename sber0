@@ -1,3 +1,45 @@
+#include "data_stat.h"
+
+double max(const double *data, int n) {
+    double max_value = data[0];
+    for (int i = 1; i < n; ++i) {
+        if (data[i] > max_value) {
+            max_value = data[i];
+        }
+    }
+    return max_value;
+}
+
+double min(const double *data, int n) {
+    double min_value = data[0];
+    for (int i = 1; i < n; ++i) {
+        if (data[i] < min_value) {
+            min_value = data[i];
+        }
+    }
+    return min_value;
+}
+
+double mean(const double *data, int n) {
+    double sum = 0.0;
+    for (int i = 0; i < n; ++i) {
+        sum += data[i];
+    }
+    return sum / n;
+}
+
+double variance(const double *data, int n) {
+    double m = mean(data, n);
+    double sum_sq = 0.0;
+    for (int i = 0; i < n; ++i) {
+        double diff = data[i] - m;
+        sum_sq += diff * diff;
+    }
+    return sum_sq / n;
+}
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../data_libs/data_io.h"
