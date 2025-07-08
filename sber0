@@ -1,4 +1,29 @@
 CC = gcc
+CFLAGS = -std=c99 -Wall -Werror -I../../data_libs -I../../data_module -I../../yet_another_decision_module
+BUILD_DIR = ../../build
+BIN = $(BUILD_DIR)/Quest_3
+
+SRC = main_executable_module.c \
+      ../data_libs/data_io.c \
+      ../data_libs/data_stat.c \
+      ../data_module/data_process.c \
+      ../yet_another_decision_module/decision.c
+
+all: $(BIN)
+
+$(BIN): $(SRC)
+        mkdir -p $(BUILD_DIR)
+        $(CC) $(CFLAGS) $^ -o $@
+
+clean:
+        rm -f $(BIN)
+
+rebuild: clean all
+
+
+
+
+CC = gcc
 CFLAGS = -Wall -Wextra -Werror -Wpedantic
 
 BIN = bin
