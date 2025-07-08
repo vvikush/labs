@@ -1,5 +1,60 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Werror -I../../data_libs -I../../data_module -I../../yet_another_decision_module
+
+BUILD_DIR = ../../build
+LIBS_DIR = ../data_libs
+MODULE_DIR = ../data_module
+DECISION_DIR = ../yet_another_decision_module
+
+BIN_Q3 = $(BUILD_DIR)/Quest_3
+BIN_Q5 = $(BUILD_DIR)/Quest_5
+STATIC_LIB = $(BUILD_DIR)/libdata_stat.a
+
+# Исходники
+SRC_Q3 = main_executable_module.c \
+      $(LIBS_DIR)/data_io.c \
+      $(LIBS_DIR)/data_stat.c \
+      $(MODULE_DIR)/data_process.c \
+      $(DECISION_DIR)/decision.c
+
+SRC_Q5 = main_executable_module.c \
+      $(LIBS_DIR)/data_io.c \
+      $(MODULE_DIR)/data_process.c \
+      $(DECISION_DIR)/decision.c
+
+# ============================
+# Цели
+# ============================
+all: build_q3 build_with_static
+
+# ========== Quest 3 ==========
+build_q3: $(BIN_Q3)
+
+$(BIN_Q3): $(SRC_Q3)
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# ========== Static Library ==========
+$(STATIC_LIB): $(LIBS_DIR)/data_stat.c $(LIBS_DIR)/data_stat.h
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $(LIBS_DIR)/data_stat.c -o $(BUILD_DIR)/data_stat.o
+	ar rcs $@ $(BUILD_DIR)/data_stat.o
+
+# ========== Quest 5 ==========
+build_with_static: $(STATIC_LIB)
+	$(CC) $(CFLAGS) $(SRC_Q5) $(STATIC_LIB) -o $(BIN_Q5)
+
+# ========== Очистка ==========
+clean:
+	rm -rf $(BUILD_DIR)/*.o $(BIN_Q3) $(BIN_Q5) $(STATIC_LIB)
+
+rebuild: clean all
+
+
+
+
+CC = gcc
+CFLAGS = -std=c99 -Wall -Werror -I../../data_libs -I../../data_module -I../../yet_another_decision_module
 BUILD_DIR = ../../build
 BIN = $(BUILD_DIR)/Quest_3
 
