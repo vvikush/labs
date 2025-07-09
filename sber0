@@ -1,3 +1,42 @@
+CC = gcc
+CFLAGS = -Wall -Werror -Wextra -std=c99
+SRC = src/s21_string.c src/s21_string_test.c
+OUT_DIR = build
+
+# Стандартная цель, чтобы убедиться, что make работает
+all:
+	@echo "Используй make <название_теста> например make strlen_tests"
+
+strlen_tests:
+	mkdir -p $(OUT_DIR)
+	$(CC) $(CFLAGS) -DRUN_STRLEN $(SRC) -o $(OUT_DIR)/Quest_1
+
+strcmp_tests:
+	mkdir -p $(OUT_DIR)
+	$(CC) $(CFLAGS) -DRUN_STRCMP $(SRC) -o $(OUT_DIR)/Quest_2
+
+strcpy_tests:
+	mkdir -p $(OUT_DIR)
+	$(CC) $(CFLAGS) -DRUN_STRCPY $(SRC) -o $(OUT_DIR)/Quest_3
+
+# Допиши дальше по аналогии:
+strcat_tests:
+	mkdir -p $(OUT_DIR)
+	$(CC) $(CFLAGS) -DRUN_STRCAT $(SRC) -o $(OUT_DIR)/Quest_4
+
+strchr_tests:
+	mkdir -p $(OUT_DIR)
+	$(CC) $(CFLAGS) -DRUN_STRCHR $(SRC) -o $(OUT_DIR)/Quest_5
+
+strstr_tests:
+	mkdir -p $(OUT_DIR)
+	$(CC) $(CFLAGS) -DRUN_STRSTR $(SRC) -o $(OUT_DIR)/Quest_6
+
+clean:
+	rm -rf $(OUT_DIR)
+
+
+
 
 void s21_strchr_test() {
     test_strchr("hello", 'e', 1);         // SUCCESS
