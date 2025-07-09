@@ -1,3 +1,19 @@
+void test_strchr(const char *str, int c, int expected_index) {
+    char *result = s21_strchr(str, c);
+    int actual_index = -1;
+
+    if (result != NULL && str != NULL) {
+        actual_index = result - str;  // вычисляем позицию
+    }
+
+    if (actual_index == expected_index) {
+        printf("strchr test: SUCCESS\n");
+    } else {
+        printf("strchr test: FAIL (got: %d, expected: %d)\n", actual_index, expected_index);
+    }
+}
+
+
 char *s21_strchr(const char *str, int c) {
     char *result = NULL;
 
