@@ -1,3 +1,20 @@
+char *s21_strcpy(char *dest, const char *src) {
+    char *original = dest;
+
+    if (dest != NULL && src != NULL) {
+        while (*src != '\0') {
+            *dest = *src;
+            dest++;
+            src++;
+        }
+        *dest = '\0';
+    }
+
+    return original;
+}
+
+
+
 #include "s21_string.h"
 #include <stdio.h>
 #include <stdlib.h>
