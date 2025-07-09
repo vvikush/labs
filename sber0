@@ -1,3 +1,31 @@
+void test_strcpy(const char *src, const char *expected) {
+    char buffer[100];  // достаточный буфер
+    char *result = s21_strcpy(buffer, src);
+
+    int ok = 1;
+    for (int i = 0; expected[i] != '\0' || result[i] != '\0'; i++) {
+        if (expected[i] != result[i]) {
+            ok = 0;
+        }
+    }
+
+    if (ok) {
+        printf("strcpy test: SUCCESS\n");
+    } else {
+        printf("strcpy test: FAIL (got: \"%s\", expected: \"%s\")\n", result, expected);
+    }
+}
+
+void s21_strcpy_test() {
+    test_strcpy("hello", "hello");
+    test_strcpy("", "");
+    test_strcpy("123 456", "123 456");
+    test_strcpy("a", "a");
+    test_strcpy("testing edge case!", "testing edge case!");
+}
+
+
+
 char *s21_strcpy(char *dest, const char *src) {
     char *original = dest;
 
