@@ -1,4 +1,25 @@
 
+char *s21_strchr(const char *str, int c) {
+    char *result = NULL;
+
+    if (str != NULL) {
+        while (*str != '\0') {
+            if (*str == (char)c) {
+                result = (char *)str;
+                break;
+            }
+            str++;
+        }
+
+        if (result == NULL && c == '\0') {
+            result = (char *)str;  // указываем на терминатор
+        }
+    }
+
+    return result;
+}
+
+
 void s21_strcat_test() {
     test_strcat("Hello", "World", "HelloWorld");            // обычный случай
     test_strcat("", "World", "World");                      // пустой base
