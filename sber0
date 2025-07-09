@@ -1,3 +1,25 @@
+char *s21_strcat(char *dest, const char *src) {
+    char *original = dest;
+
+    if (dest != NULL && src != NULL) {
+        while (*dest != '\0') {
+            dest++;
+        }
+
+        while (*src != '\0') {
+            *dest = *src;
+            dest++;
+            src++;
+        }
+
+        *dest = '\0';
+    }
+
+    return original;
+}
+з
+
+
 void test_strcpy(const char *src, const char *expected) {
     char buffer[100];  // достаточный буфер
     char *result = s21_strcpy(buffer, src);
