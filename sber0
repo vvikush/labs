@@ -1,3 +1,27 @@
+char *s21_strchr(const char *str, int c) {
+    char *result = NULL;
+
+    if (str != NULL) {
+        int found = 0;
+
+        while (*str != '\0' && !found) {
+            if (*str == (char)c) {
+                result = (char *)str;
+                found = 1;
+            } else {
+                str++;
+            }
+        }
+
+        if (!found && c == '\0') {
+            result = (char *)str;
+        }
+    }
+
+    return result;
+}
+
+
 
 char *s21_strchr(const char *str, int c) {
     char *result = NULL;
