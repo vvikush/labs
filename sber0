@@ -1,3 +1,41 @@
+int s21_strcmp(const char *str1, const char *str2) {
+    int result = 0;
+
+    int null_case = 0;
+
+    if (str1 == NULL && str2 == NULL) {
+        result = 0;
+        null_case = 1;
+    }
+
+    if (!null_case && str1 == NULL) {
+        result = -1;
+        null_case = 1;
+    }
+
+    if (!null_case && str2 == NULL) {
+        result = 1;
+        null_case = 1;
+    }
+
+    while (!null_case && *str1 != '\0' && *str2 != '\0') {
+        if (*str1 != *str2) {
+            result = (*str1 > *str2) ? 1 : -1;
+            null_case = 1;
+        }
+        str1++;
+        str2++;
+    }
+
+    if (!null_case && *str1 != *str2) {
+        result = (*str1 > *str2) ? 1 : -1;
+    }
+
+    return result;
+}
+
+
+
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
 SRC = src/s21_string.c src/s21_string_test.c
