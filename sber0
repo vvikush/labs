@@ -1,3 +1,25 @@
+
+void s21_strcat_test() {
+    test_strcat("Hello", "World", "HelloWorld");            // обычный случай
+    test_strcat("", "World", "World");                      // пустой base
+    test_strcat("Hello", "", "Hello");                      // пустой src
+    test_strcat("", "", "");                                // оба пустые
+    test_strcat("abc", "def", "abcdef");                    // короткие строки
+    test_strcat("x", "y", "xy");                            // 1 символ + 1 символ
+
+    // краевой случай: длинная строка
+    char big[101], result[201];
+    for (int i = 0; i < 100; i++) big[i] = 'x';
+    big[100] = '\0';
+    s21_strcpy(result, big);
+    s21_strcat(result, big);
+    test_strcat(big, big, result);  // ожидание: 200 'x' + '\0'
+
+    // ❌ намеренно неверное ожидание (проверка FAIL)
+    test_strcat("Hello", "World", "Hello_World");
+}
+
+
 void test_strcat(const char *base, const char *add, const char *expected) {
     char buffer[200];
 
