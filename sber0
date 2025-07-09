@@ -1,3 +1,18 @@
+
+void s21_strchr_test() {
+    test_strchr("hello", 'e', 1);         // SUCCESS
+    test_strchr("world", 'z', -1);        // SUCCESS (не найден)
+    test_strchr("abcabc", 'c', 2);        // SUCCESS (первое вхождение)
+    test_strchr("", 'a', -1);             // SUCCESS (в пустой строке)
+    test_strchr("edge\0test", '\0', 4);   // SUCCESS (ищем '\0')
+    test_strchr(NULL, 'a', -1);           // SUCCESS (NULL-строка)
+
+    // 🔴 Намеренно некорректное ожидание (FAIL)
+    test_strchr("mistake", 's', 3);       // FAIL: 's' на позиции 2, а не 3
+}
+
+
+
 void test_strchr(const char *str, int c, int expected_index) {
     char *result = s21_strchr(str, c);
     int actual_index = -1;
