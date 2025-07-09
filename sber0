@@ -1,3 +1,24 @@
+void test_strcat(const char *base, const char *add, const char *expected) {
+    char buffer[200];
+
+    s21_strcpy(buffer, base);           // копируем начальную строку
+    char *result = s21_strcat(buffer, add);  // добавляем вторую
+
+    int ok = 1;
+    for (int i = 0; expected[i] != '\0' || result[i] != '\0'; i++) {
+        if (expected[i] != result[i]) {
+            ok = 0;
+        }
+    }
+
+    if (ok) {
+        printf("strcat test: SUCCESS\n");
+    } else {
+        printf("strcat test: FAIL (got: \"%s\", expected: \"%s\")\n", result, expected);
+    }
+}
+
+
 char *s21_strcat(char *dest, const char *src) {
     char *original = dest;
 
