@@ -1,3 +1,49 @@
+void s21_strcmp_test() {
+    // одинаковые строки
+    if (s21_strcmp("abc", "abc") == 0) {
+        printf("strcmp test 1: SUCCESS\n");
+    } else {
+        printf("strcmp test 1: FAIL\n");
+    }
+
+    // str1 < str2
+    if (s21_strcmp("abc", "abd") < 0) {
+        printf("strcmp test 2: SUCCESS\n");
+    } else {
+        printf("strcmp test 2: FAIL\n");
+    }
+
+    // str1 > str2
+    if (s21_strcmp("abd", "abc") > 0) {
+        printf("strcmp test 3: SUCCESS\n");
+    } else {
+        printf("strcmp test 3: FAIL\n");
+    }
+
+    // краевой случай: одна строка пустая
+    if (s21_strcmp("", "abc") < 0) {
+        printf("strcmp test 4: SUCCESS\n");
+    } else {
+        printf("strcmp test 4: FAIL\n");
+    }
+
+    // обе пустые
+    if (s21_strcmp("", "") == 0) {
+        printf("strcmp test 5: SUCCESS\n");
+    } else {
+        printf("strcmp test 5: FAIL\n");
+    }
+
+    // сравнение с NULL (краевой случай)
+    if (s21_strcmp(NULL, "abc") < 0) {
+        printf("strcmp test 6: SUCCESS\n");
+    } else {
+        printf("strcmp test 6: FAIL\n");
+    }
+}
+
+
+
 int s21_strcmp(const char *str1, const char *str2) {
     int result = 0;
 
