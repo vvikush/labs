@@ -1,5 +1,45 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -g
+
+# Путь и имя исполняемого файла для door_struct
+DOOR_TARGET = build/Quest_1
+DOOR_SRC = src/dmanager_module.c
+
+.PHONY: all clean door_struct list_test stack_test
+
+all: door_struct list_test stack_test
+
+door_struct:
+	mkdir -p build
+	$(CC) $(CFLAGS) -o $(DOOR_TARGET) $(DOOR_SRC)
+
+list_test:
+	@echo "Добавь правила сюда позже"
+
+stack_test:
+	@echo "Добавь правила сюда позже"
+
+clean:
+	rm -rf build
+
+
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -g
+TARGET = build/Quest_1
+SRC = src/dmanager_module.c
+
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	mkdir -p build
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
+
+clean:
+	rm -rf build
+
+
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -g
 TARGET = build/Quest_1
 SRC = src/dmanager_module.c
 
