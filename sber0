@@ -1,3 +1,59 @@
+#include <stdio.h>
+#include "stack.h"
+
+int test_push() {
+    struct stack s;
+    int result = SUCCESS;
+
+    init(&s);
+
+    if (push(&s, 10) != SUCCESS || s.top == NULL || s.top->value != 10) {
+        result = FAIL;
+    }
+
+    destroy(&s);
+    return result;
+}
+
+int test_pop() {
+    struct stack s;
+    int result = SUCCESS;
+    int value = 0;
+
+    init(&s);
+    push(&s, 42);
+
+    if (pop(&s, &value) != SUCCESS || value != 42 || s.top != NULL) {
+        result = FAIL;
+    }
+
+    destroy(&s);
+    return result;
+}
+
+int main() {
+    int result = SUCCESS;
+
+    if (test_push() != SUCCESS) {
+        printf("push test failed\n");
+        result = FAIL;
+    }
+
+    if (test_pop() != SUCCESS) {
+        printf("pop test failed\n");
+        result = FAIL;
+    }
+
+    if (result == SUCCESS) {
+        printf("All tests passed\n");
+    }
+
+    return result;
+}
+
+
+
+
 #include <stdlib.h>
 #include "stack.h"
 
