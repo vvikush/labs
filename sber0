@@ -1,3 +1,20 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -g
+TARGET = build/Quest_1
+SRC = src/dmanager_module.c
+
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	mkdir -p build
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
+
+clean:
+	rm -rf build
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h> 
 #include <time.h> 
