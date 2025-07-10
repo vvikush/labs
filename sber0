@@ -1,3 +1,38 @@
+int test_find_door_found() {
+    struct door d1 = {100, 1};
+    struct door d2 = {200, 1};
+
+    struct node* root = init(&d1);
+    if (root == NULL) return FAIL;
+
+    add_door(root, &d2);
+
+    struct node* found = find_door(200, root);
+    if (found == NULL || found->data.id != 200) {
+        destroy(root);
+        return FAIL;
+    }
+
+    destroy(root);
+    return SUCCESS;
+}
+
+int test_find_door_not_found() {
+    struct door d1 = {100, 1};
+    struct node* root = init(&d1);
+    if (root == NULL) return FAIL;
+
+    struct node* found = find_door(999, root);
+    if (found != NULL) {
+        destroy(root);
+        return FAIL;
+    }
+
+    destroy(root);
+    return SUCCESS;
+}
+
+
 if (test_find_door_found() != SUCCESS) {
     printf("find_door_found test failed\n");
     result = FAIL;
