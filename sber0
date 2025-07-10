@@ -1,3 +1,28 @@
+#ifndef STACK_H
+#define STACK_H
+
+#define SUCCESS 0
+#define FAIL 1
+
+struct stack_node {
+    int value;
+    struct stack_node* next;
+};
+
+struct stack {
+    struct stack_node* top;
+};
+
+void init(struct stack* s);
+int push(struct stack* s, int value);
+int pop(struct stack* s, int* value);
+void destroy(struct stack* s);
+
+#endif  // STACK_H
+
+
+
+
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -g
 
