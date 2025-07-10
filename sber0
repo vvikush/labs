@@ -1,374 +1,58 @@
-CC = gcc
-CFLAGS = -Wall -Werror -Wextra -std=c99
-SRC = src/s21_string.c src/s21_string_test.c
-OUT_DIR = build
-
-# Стандартная цель, чтобы убедиться, что make работает
-all:
-	@echo "Используй make <название_теста> например make strlen_tests"
-
-strlen_tests:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -DRUN_STRLEN $(SRC) -o $(OUT_DIR)/Quest_1
-
-strcmp_tests:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -DRUN_STRCMP $(SRC) -o $(OUT_DIR)/Quest_2
-
-strcpy_tests:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -DRUN_STRCPY $(SRC) -o $(OUT_DIR)/Quest_3
-
-# Допиши дальше по аналогии:
-strcat_tests:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -DRUN_STRCAT $(SRC) -o $(OUT_DIR)/Quest_4
-
-strchr_tests:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -DRUN_STRCHR $(SRC) -o $(OUT_DIR)/Quest_5
-
-strstr_tests:
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -DRUN_STRSTR $(SRC) -o $(OUT_DIR)/Quest_6
-
-clean:
-	rm -rf $(OUT_DIR)
-
-
-
-
-void s21_strchr_test() {
-    test_strchr("hello", 'e', 1);         // SUCCESS
-    test_strchr("world", 'z', -1);        // SUCCESS (не найден)
-    test_strchr("abcabc", 'c', 2);        // SUCCESS (первое вхождение)
-    test_strchr("", 'a', -1);             // SUCCESS (в пустой строке)
-    test_strchr("edge\0test", '\0', 4);   // SUCCESS (ищем '\0')
-    test_strchr(NULL, 'a', -1);           // SUCCESS (NULL-строка)
-
-    // 🔴 Намеренно некорректное ожидание (FAIL)
-    test_strchr("mistake", 's', 3);       // FAIL: 's' на позиции 2, а не 3
-}
-
-
-
-void test_strchr(const char *str, int c, int expected_index) {
-    char *result = s21_strchr(str, c);
-    int actual_index = -1;
-
-    if (result != NULL && str != NULL) {
-        actual_index = result - str;  // вычисляем позицию
-    }
-
-    if (actual_index == expected_index) {
-        printf("strchr test: SUCCESS\n");
-    } else {
-        printf("strchr test: FAIL (got: %d, expected: %d)\n", actual_index, expected_index);
-    }
-}
-
-
-char *s21_strchr(const char *str, int c) {
-    char *result = NULL;
-
-    if (str != NULL) {
-        int found = 0;
-
-        while (*str != '\0' && !found) {
-            if (*str == (char)c) {
-                result = (char *)str;
-                found = 1;
-            } else {
-                str++;
-            }
-        }
-
-        if (!found && c == '\0') {
-            result = (char *)str;
-        }
-    }
-
-    return result;
-}
-
-
-
-char *s21_strchr(const char *str, int c) {
-    char *result = NULL;
-
-    if (str != NULL) {
-        while (*str != '\0') {
-            if (*str == (char)c) {
-                result = (char *)str;
-                break;
-            }
-            str++;
-        }
-
-        if (result == NULL && c == '\0') {
-            result = (char *)str;  // указываем на терминатор
-        }
-    }
-
-    return result;
-}
-
-
-void s21_strcat_test() {
-    test_strcat("Hello", "World", "HelloWorld");            // обычный случай
-    test_strcat("", "World", "World");                      // пустой base
-    test_strcat("Hello", "", "Hello");                      // пустой src
-    test_strcat("", "", "");                                // оба пустые
-    test_strcat("abc", "def", "abcdef");                    // короткие строки
-    test_strcat("x", "y", "xy");                            // 1 символ + 1 символ
-
-    // краевой случай: длинная строка
-    char big[101], result[201];
-    for (int i = 0; i < 100; i++) big[i] = 'x';
-    big[100] = '\0';
-    s21_strcpy(result, big);
-    s21_strcat(result, big);
-    test_strcat(big, big, result);  // ожидание: 200 'x' + '\0'
-
-    // ❌ намеренно неверное ожидание (проверка FAIL)
-    test_strcat("Hello", "World", "Hello_World");
-}
-
-
-void test_strcat(const char *base, const char *add, const char *expected) {
-    char buffer[200];
-
-    s21_strcpy(buffer, base);           // копируем начальную строку
-    char *result = s21_strcat(buffer, add);  // добавляем вторую
-
-    int ok = 1;
-    for (int i = 0; expected[i] != '\0' || result[i] != '\0'; i++) {
-        if (expected[i] != result[i]) {
-            ok = 0;
-        }
-    }
-
-    if (ok) {
-        printf("strcat test: SUCCESS\n");
-    } else {
-        printf("strcat test: FAIL (got: \"%s\", expected: \"%s\")\n", result, expected);
-    }
-}
-
-
-char *s21_strcat(char *dest, const char *src) {
-    char *original = dest;
-
-    if (dest != NULL && src != NULL) {
-        while (*dest != '\0') {
-            dest++;
-        }
-
-        while (*src != '\0') {
-            *dest = *src;
-            dest++;
-            src++;
-        }
-
-        *dest = '\0';
-    }
-
-    return original;
-}
-з
-
-
-void test_strcpy(const char *src, const char *expected) {
-    char buffer[100];  // достаточный буфер
-    char *result = s21_strcpy(buffer, src);
-
-    int ok = 1;
-    for (int i = 0; expected[i] != '\0' || result[i] != '\0'; i++) {
-        if (expected[i] != result[i]) {
-            ok = 0;
-        }
-    }
-
-    if (ok) {
-        printf("strcpy test: SUCCESS\n");
-    } else {
-        printf("strcpy test: FAIL (got: \"%s\", expected: \"%s\")\n", result, expected);
-    }
-}
-
-void s21_strcpy_test() {
-    test_strcpy("hello", "hello");
-    test_strcpy("", "");
-    test_strcpy("123 456", "123 456");
-    test_strcpy("a", "a");
-    test_strcpy("testing edge case!", "testing edge case!");
-}
-
-
-
-char *s21_strcpy(char *dest, const char *src) {
-    char *original = dest;
-
-    if (dest != NULL && src != NULL) {
-        while (*src != '\0') {
-            *dest = *src;
-            dest++;
-            src++;
-        }
-        *dest = '\0';
-    }
-
-    return original;
-}
-
-
-
-#include "s21_string.h"
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> 
+#include <time.h> 
+#include "door_struct.h"
 
-// тестовая обёртка для strlen
-void test_strlen(const char *input, unsigned long expected) {
-    unsigned long result = s21_strlen(input);
-    if (result == expected) {
-        printf("strlen test: SUCCESS\n");
-    } else {
-        printf("strlen test: FAIL (expected %lu, got %lu)\n", expected, result);
-    }
-}
+#define DOORS_COUNT 15
+#define MAX_ID_SEED 10000
 
-void s21_strlen_test() {
-    test_strlen("school", 6);
-    test_strlen("", 0);
-    test_strlen("nyiarubvruipbuavapriuabvarg", 27);
-    test_strlen("school sber", 11);
-    test_strlen(NULL, 0);
-}
+void initialize_doors(struct door* doors);
 
-// тестовая обёртка для strcmp
-void test_strcmp(const char *str1, const char *str2, int expected) {
-    int result = s21_strcmp(str1, str2);
-    if ((result == 0 && expected == 0) ||
-        (result < 0 && expected < 0) ||
-        (result > 0 && expected > 0)) {
-        printf("strcmp test: SUCCESS\n");
-    } else {
-        printf("strcmp test: FAIL (expected %d, got %d)\n", expected, result);
-    }
-}
-
-void s21_strcmp_test() {
-    test_strcmp("abc", "abc", 0);
-    test_strcmp("abc", "abd", -1);
-    test_strcmp("abd", "abc", 1);
-    test_strcmp("", "abc", -1);
-    test_strcmp("", "", 0);
-    test_strcmp(NULL, "abc", -1);
-    test_strcmp("abc", NULL, 1);
-    test_strcmp(NULL, NULL, 0);
-}
+// функция сортировки и закрытия дверей
+void sort_and_close_doors(struct door* doors, int count);
 
 int main() {
-    s21_strlen_test();
-    s21_strcmp_test();
+    struct door doors[DOORS_COUNT];
+
+    initialize_doors(doors);
+    sort_and_close_doors(doors, DOORS_COUNT);
+
     return 0;
 }
 
-
-
-void s21_strcmp_test() {
-    // одинаковые строки
-    if (s21_strcmp("abc", "abc") == 0) {
-        printf("strcmp test 1: SUCCESS\n");
-    } else {
-        printf("strcmp test 1: FAIL\n");
-    }
-
-    // str1 < str2
-    if (s21_strcmp("abc", "abd") < 0) {
-        printf("strcmp test 2: SUCCESS\n");
-    } else {
-        printf("strcmp test 2: FAIL\n");
-    }
-
-    // str1 > str2
-    if (s21_strcmp("abd", "abc") > 0) {
-        printf("strcmp test 3: SUCCESS\n");
-    } else {
-        printf("strcmp test 3: FAIL\n");
-    }
-
-    // краевой случай: одна строка пустая
-    if (s21_strcmp("", "abc") < 0) {
-        printf("strcmp test 4: SUCCESS\n");
-    } else {
-        printf("strcmp test 4: FAIL\n");
-    }
-
-    // обе пустые
-    if (s21_strcmp("", "") == 0) {
-        printf("strcmp test 5: SUCCESS\n");
-    } else {
-        printf("strcmp test 5: FAIL\n");
-    }
-
-    // сравнение с NULL (краевой случай)
-    if (s21_strcmp(NULL, "abc") < 0) {
-        printf("strcmp test 6: SUCCESS\n");
-    } else {
-        printf("strcmp test 6: FAIL\n");
+// Doors initialization function
+// ATTENTION!!!
+// DO NOT CHANGE!
+void initialize_doors(struct door* doors) {
+    srand(time(0)); 
+    
+    int seed = rand() % MAX_ID_SEED;
+    for (int i = 0; i < DOORS_COUNT; i++) {
+        doors[i].id = (i + seed) % DOORS_COUNT;
+        doors[i].status = rand() % 2;
     }
 }
 
+// функция сортировки пузырьком и закрытия дверей
+void sort_and_close_doors(struct door* doors, int count) {
+    int i = 0;
+    int j = 0;
+    struct door temp;
 
-
-int s21_strcmp(const char *str1, const char *str2) {
-    int result = 0;
-
-    int null_case = 0;
-
-    if (str1 == NULL && str2 == NULL) {
-        result = 0;
-        null_case = 1;
-    }
-
-    if (!null_case && str1 == NULL) {
-        result = -1;
-        null_case = 1;
-    }
-
-    if (!null_case && str2 == NULL) {
-        result = 1;
-        null_case = 1;
-    }
-
-    while (!null_case && *str1 != '\0' && *str2 != '\0') {
-        if (*str1 != *str2) {
-            result = (*str1 > *str2) ? 1 : -1;
-            null_case = 1;
+    for (i = 0; i < count - 1; i++) {
+        for (j = 0; j < count - i - 1; j++) {
+            if (doors[j].id > doors[j + 1].id) {
+                temp = doors[j];
+                doors[j] = doors[j + 1];
+                doors[j + 1] = temp;
+            }
         }
-        str1++;
-        str2++;
     }
 
-    if (!null_case && *str1 != *str2) {
-        result = (*str1 > *str2) ? 1 : -1;
+    for (i = 0; i < count; i++) {
+        doors[i].status = 0;
+        printf("%d, %d\n", doors[i].id, doors[i].status);
     }
-
-    return result;
 }
 
 
-
-CC = gcc
-CFLAGS = -Wall -Werror -Wextra -std=c11
-SRC = src/s21_string.c src/s21_string_test.c
-OUT_DIR = build
-OUT = $(OUT_DIR)/Quest_1
-
-strlen_tests: $(SRC)
-	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) $(SRC) -o $(OUT)
-
-clean:
-	rm -rf $(OUT_DIR)
