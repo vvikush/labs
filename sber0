@@ -1,3 +1,51 @@
+#include <stdlib.h>
+#include "stack.h"
+
+void init(struct stack* s) {
+    if (s != NULL) {
+        s->top = NULL;
+    }
+}
+
+int push(struct stack* s, int value) {
+    int result = FAIL;
+    if (s != NULL) {
+        struct stack_node* new_node = malloc(sizeof(struct stack_node));
+        if (new_node != NULL) {
+            new_node->value = value;
+            new_node->next = s->top;
+            s->top = new_node;
+            result = SUCCESS;
+        }
+    }
+    return result;
+}
+
+int pop(struct stack* s, int* value) {
+    int result = FAIL;
+    if (s != NULL && s->top != NULL && value != NULL) {
+        struct stack_node* temp = s->top;
+        *value = temp->value;
+        s->top = temp->next;
+        free(temp);
+        result = SUCCESS;
+    }
+    return result;
+}
+
+void destroy(struct stack* s) {
+    if (s != NULL) {
+        struct stack_node* current = s->top;
+        while (current != NULL) {
+            struct stack_node* next = current->next;
+            free(current);
+            current = next;
+        }
+        s->top = NULL;
+    }
+}
+
+
 #ifndef STACK_H
 #define STACK_H
 
