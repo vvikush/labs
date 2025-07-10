@@ -1,3 +1,94 @@
+if (test_find_door_found() != SUCCESS) {
+    printf("find_door_found test failed\n");
+    result = FAIL;
+}
+
+if (test_find_door_not_found() != SUCCESS) {
+    printf("find_door_not_found test failed\n");
+    result = FAIL;
+}
+
+#include <stdlib.h>
+#include "list.h"
+
+struct node* init(struct door* door) {
+    struct node* new_node = NULL;
+
+    if (door != NULL) {
+        new_node = malloc(sizeof(struct node));
+        if (new_node != NULL) {
+            new_node->data = *door;
+            new_node->next = NULL;
+        }
+    }
+
+    return new_node;
+}
+
+struct node* add_door(struct node* elem, struct door* door) {
+    struct node* new_node = NULL;
+
+    if (elem != NULL && door != NULL) {
+        new_node = malloc(sizeof(struct node));
+        if (new_node != NULL) {
+            new_node->data = *door;
+            new_node->next = elem->next;
+            elem->next = new_node;
+        }
+    }
+
+    return new_node;
+}
+
+struct node* find_door(int door_id, struct node* root) {
+    struct node* current = root;
+
+    while (current != NULL) {
+        if (current->data.id == door_id) {
+            break;
+        }
+        current = current->next;
+    }
+
+    return current;
+}
+
+struct node* remove_door(struct node* elem, struct node* root) {
+    struct node* new_root = root;
+
+    if (elem != NULL && root != NULL) {
+        if (root == elem) {
+            new_root = root->next;
+            free(root);
+        } else {
+            struct node* prev = root;
+            while (prev->next != NULL && prev->next != elem) {
+                prev = prev->next;
+            }
+
+            if (prev->next == elem) {
+                prev->next = elem->next;
+                free(elem);
+            }
+        }
+    }
+
+    return new_root;
+}
+
+void destroy(struct node* root) {
+    struct node* current = root;
+    struct node* next = NULL;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+}
+
+
+
 #ifndef LIST_H
 #define LIST_H
 
