@@ -1,3 +1,42 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -std=c99 -g
+BUILD_DIR = build
+
+# Цели (stage names)
+.PHONY: all clean door_struct list_test stack_test
+
+# Общая цель
+all: door_struct list_test stack_test
+
+# === Квест 1: door_struct ===
+DOOR_TARGET = $(BUILD_DIR)/Quest_1
+DOOR_SRC = src/dmanager_module.c
+
+door_struct:
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(DOOR_TARGET) $(DOOR_SRC)
+
+# === Квест 2: list_test ===
+LIST_TARGET = $(BUILD_DIR)/Quest_2
+LIST_SRC = src/list.c src/list_test.c
+
+list_test:
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(LIST_TARGET) $(LIST_SRC)
+
+# === Квест 3: stack_test ===
+STACK_TARGET = $(BUILD_DIR)/Quest_3
+STACK_SRC = src/stack.c src/stack_test.c
+
+stack_test:
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(STACK_TARGET) $(STACK_SRC)
+
+# Очистка сборки
+clean:
+	rm -rf $(BUILD_DIR)
+
+
 #include <stdio.h>
 #include "stack.h"
 
