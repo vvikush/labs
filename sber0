@@ -1,3 +1,142 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define LEN_NUM 10
+#define MAX_TOKENS 100
+
+int is_operator(char c) {
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+}
+
+int is_bracket(char c) {
+    return c == '(' || c == ')';
+}
+
+int is_operator_or_bracket(char c) {
+    return is_operator(c) || is_bracket(c);
+}
+
+int is_alpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+int is_digit(char c) {
+    return (c >= '0' && c <= '9');
+}
+
+int is_func_or_x(const char* s) {
+    return strcmp(s, "sin") == 0 || strcmp(s, "cos") == 0 || strcmp(s, "tan") == 0 ||
+           strcmp(s, "sqrt") == 0 || strcmp(s, "ln") == 0 || strcmp(s, "exp") == 0 ||
+           strcmp(s, "fabs") == 0 || strcmp(s, "x") == 0;
+}
+
+// проверка на допустимые символы (буквы, цифры, знаки, пробелы)
+int is_valid_char(char c) {
+    return is_digit(c) || is_alpha(c) || is_operator_or_bracket(c) || c == ' ';
+}
+
+int lexer(char *string, char *tokens[], int *n) {
+    int len = strlen(string);
+    int token = 0;
+    int pos = 0;
+    int flag = 1;
+    int balance = 0; // баланс скобок
+    char prev[LEN_NUM] = {0}; // предыдущий токен
+
+    while (pos < len && flag) {
+        char c = string[pos];
+
+        if (!is_valid_char(c)) {
+            // запрещённый символ
+            flag = 0;
+        } else if (c == ' ') {
+            pos++;
+        } else if (is_digit(c)) {
+            char num[LEN_NUM] = {0};
+            int i = 0;
+            while (is_digit(string[pos]) && i < LEN_NUM - 1) {
+                num[i++] = string[pos++];
+            }
+            tokens[token] = malloc(strlen(num) + 1);
+            strcpy(tokens[token++], num);
+            strcpy(prev, num);
+        } else if (is_alpha(c)) {
+            char func_or_x[LEN_NUM] = {0};
+            int i = 0;
+            while (is_alpha(string[pos]) && i < LEN_NUM - 1) {
+                func_or_x[i++] = string[pos++];
+            }
+            if (is_func_or_x(func_or_x)) {
+                tokens[token] = malloc(strlen(func_or_x) + 1);
+                strcpy(tokens[token++], func_or_x);
+                strcpy(prev, func_or_x);
+            } else {
+                flag = 0; // неизвестное слово
+            }
+        } else if (is_operator_or_bracket(c)) {
+            // два оператора подряд (например ++, **, -/)
+            if (is_operator(c) && (is_operator(prev[0]) || prev[0] == '\0')) {
+                flag = 0;
+            }
+
+            // пустые скобки ()
+            if (c == ')' && strcmp(prev, "(") == 0) {
+                flag = 0;
+            }
+
+            // баланс скобок
+            if (c == '(') balance++;
+            if (c == ')') balance--;
+            if (balance < 0) flag = 0;
+
+            char temp[2] = {c, '\0'};
+            tokens[token] = malloc(2);
+            strcpy(tokens[token++], temp);
+            strcpy(prev, temp);
+            pos++;
+        }
+    }
+
+    // финальная проверка
+    if (balance != 0) flag = 0; // несбалансированные скобки
+    if (is_operator(prev[0])) flag = 0; // выражение не должно заканчиваться оператором
+
+    *n = token;
+    return flag;
+}
+
+int main() {
+    char input[256];
+    printf("Введите выражение: ");
+    if (fgets(input, sizeof(input), stdin) == NULL) {
+        printf("Ошибка ввода\n");
+        return 1;
+    }
+
+    // удалим символ новой строки, если есть
+    input[strcspn(input, "\n")] = '\0';
+
+    char* tokens[MAX_TOKENS] = {NULL};
+    int num_tokens = 0;
+
+    if (lexer(input, tokens, &num_tokens)) {
+        printf("Токены: [");
+        for (int i = 0; i < num_tokens; i++) {
+            printf("\"%s\"", tokens[i]);
+            if (i < num_tokens - 1) printf(", ");
+        }
+        printf("]\n");
+    } else {
+        printf("Ошибка лексического анализа\n");
+    }
+
+    for (int i = 0; i < num_tokens; i++) {
+        free(tokens[i]);
+    }
+
+    return 0;
+}
 
 
 
