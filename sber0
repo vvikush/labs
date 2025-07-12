@@ -6,6 +6,68 @@
 #define CENTER_Y 12
 #define PI 3.14159265358979323846
 
+// временная заглушка — позже будет заменена реальной функцией вычисления f(x)
+double evaluate(double x) {
+    return sin(x); // пока рисуем sin(x)
+}
+
+void draw_graph() {
+    char field[HEIGHT][WIDTH];
+    int row, col;
+    double x, y;
+
+    // заполняем всё поле точками
+    row = 0;
+    while (row < HEIGHT) {
+        col = 0;
+        while (col < WIDTH) {
+            field[row][col] = '.';
+            col++;
+        }
+        row++;
+    }
+
+    col = 0;
+    while (col < WIDTH) {
+        // x — от 0 до 4π
+        x = (4.0 * PI * col) / (WIDTH - 1);
+        y = evaluate(x);
+
+        // y должен быть в диапазоне [-1, 1]
+        if (!(y < -1.0 || y > 1.0)) {
+            row = CENTER_Y - (int)(round(y * (HEIGHT / 2.0 - 1)));
+
+            // проверка границ поля
+            if (row >= 0 && row < HEIGHT) {
+                field[row][col] = '*';
+            }
+        }
+
+        col++;
+    }
+
+    row = 0;
+    while (row < HEIGHT) {
+        col = 0;
+        while (col < WIDTH) {
+            putchar(field[row][col]);
+            col++;
+        }
+        putchar('\n');
+        row++;
+    }
+}
+
+
+
+#include <stdio.h>
+#include <math.h>
+
+#define WIDTH 80
+#define HEIGHT 25
+#define CENTER_Y 12
+#define PI 3.14159265358979323846
+
 // заглушка — позже будет заменена на реальную реализацию вычислений f(x)
 double evaluate(double x) {
     return sin(x);  // временно просто sin(x)
