@@ -3,6 +3,116 @@
 #include <string.h>
 
 #define LEN_NUM 10
+
+int is_operator_or_bracket(char c) {
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '(' || c == ')';
+}
+
+int is_operator(char c) {
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+}
+
+int is_alpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+int is_digit(char c) {
+    return c >= '0' && c <= '9';
+}
+
+int is_func_or_x(const char* s) {
+    return strcmp(s, "sin") == 0 || strcmp(s, "cos") == 0 || strcmp(s, "tan") == 0 ||
+           strcmp(s, "sqrt") == 0 || strcmp(s, "ln") == 0 || strcmp(s, "exp") == 0 ||
+           strcmp(s, "fabs") == 0 || strcmp(s, "x") == 0;
+}
+
+int lexer(char *string, char *tokens[], int *n) {
+    int len = strlen(string), token = 0, pos = 0, balance = 0, ok = 1;
+    char prev[LEN_NUM] = {0};
+
+    while (pos < len && ok == 1) {
+        if (string[pos] == ' ') {
+            pos++;
+        } else if (is_digit(string[pos])) {
+            char num[LEN_NUM] = {0};
+            int i = 0;
+            while (is_digit(string[pos]) && i < LEN_NUM - 1) {
+                num[i++] = string[pos++];
+            }
+            tokens[token] = malloc(strlen(num) + 1);
+            strcpy(tokens[token++], num);
+            strcpy(prev, num);
+        } else if (is_alpha(string[pos])) {
+            char name[LEN_NUM] = {0};
+            int i = 0;
+            while (is_alpha(string[pos]) && i < LEN_NUM - 1) {
+                name[i++] = string[pos++];
+            }
+            if (is_func_or_x(name)) {
+                tokens[token] = malloc(strlen(name) + 1);
+                strcpy(tokens[token++], name);
+                strcpy(prev, name);
+            } else {
+                ok = 0;
+            }
+        } else if (is_operator_or_bracket(string[pos])) {
+            char curr = string[pos++];
+            if ((curr == ')' && strcmp(prev, "(") == 0) || 
+                (is_operator(curr) && is_operator(prev[0]))) {
+                ok = 0;
+            }
+            if (curr == '(') balance++;
+            if (curr == ')') balance--;
+            if (balance < 0) ok = 0;
+            tokens[token] = malloc(2);
+            tokens[token][0] = curr;
+            tokens[token++][1] = '\0';
+            prev[0] = curr;
+            prev[1] = '\0';
+        } else {
+            ok = 0;
+        }
+    }
+
+    if (balance != 0 || is_operator(prev[0])) {
+        ok = 0;
+    }
+
+    *n = token;
+    return ok;
+}
+
+int main() {
+    const char* expr = "x^2 + sqrt(x/6)";
+    char* tokens[50] = {NULL};
+    int num_tokens = 0;
+    int result = lexer((char*)expr, tokens, &num_tokens);
+
+    if (result == 1) {
+        printf("Токены: [");
+        for (int i = 0; i < num_tokens; i++) {
+            printf("\"%s\"", tokens[i]);
+            if (i < num_tokens - 1) printf(", ");
+        }
+        printf("]\n");
+    } else {
+        printf("Ошибка лексического анализа\n");
+    }
+
+    for (int i = 0; i < num_tokens; i++) {
+        free(tokens[i]);
+    }
+
+    return 0;
+}
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define LEN_NUM 10
 #define MAX_TOKENS 100
 
 int is_operator(char c) {
