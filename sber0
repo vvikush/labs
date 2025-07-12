@@ -1,3 +1,57 @@
+#include <stdio.h>
+#include <math.h>
+
+#define WIDTH 80
+#define HEIGHT 25
+#define CENTER_Y 12
+#define PI 3.14159265358979323846
+
+// заглушка — позже будет заменена на реальную реализацию вычислений f(x)
+double evaluate(double x) {
+    return sin(x);  // временно просто sin(x)
+}
+
+void draw_graph() {
+    char field[HEIGHT][WIDTH];
+
+    // заполняем всё поле точками
+    for (int row = 0; row < HEIGHT; row++) {
+        for (int col = 0; col < WIDTH; col++) {
+            field[row][col] = '.';
+        }
+    }
+
+    // проходим по всем 80 точкам X
+    for (int col = 0; col < WIDTH; col++) {
+        // вычисляем значение x от 0 до 4π
+        double x = (4.0 * PI * col) / (WIDTH - 1);
+        double y = evaluate(x);
+
+        // проверка: y должен быть в диапазоне [-1, 1]
+        if (y < -1.0 || y > 1.0) {
+            continue; // за пределами допустимого — пропускаем
+        }
+
+        // округляем y по математическим правилам в координату row
+        int row = CENTER_Y - (int)round(y * (HEIGHT / 2.0 - 1));
+
+        // проверка границ
+        if (row >= 0 && row < HEIGHT) {
+            field[row][col] = '*';
+        }
+    }
+
+    // выводим поле в терминал
+    for (int row = 0; row < HEIGHT; row++) {
+        for (int col = 0; col < WIDTH; col++) {
+            putchar(field[row][col]);
+        }
+        putchar('\n');
+    }
+}
+
+
+
 int test_find_door_found() {
     struct door d1 = {100, 1};
     struct door d2 = {200, 1};
