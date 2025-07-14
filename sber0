@@ -1,3 +1,22 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror
+BUILD_DIR = ../build
+TARGET = cipher
+SRC = cipher.c
+
+.PHONY: all clean cipher
+
+all: cipher
+
+cipher:
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(SRC) -o $(BUILD_DIR)/$(TARGET)
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+
+
 #include <stdio.h>
 
 #define MAX_PATH 256
