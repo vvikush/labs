@@ -1,5 +1,207 @@
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
+
+#define MAX_PATH 256
+#define MAX_LINE 1024
+#define TARGET_DIR "src/ai_modules"
+
+int vybor(int *n) {
+    int res = scanf("%d", n);
+    int c;
+
+    if (res != 1) {
+        while ((c = getchar()) != '\n' && c != EOF);
+    }
+
+    return res == 1;
+}
+
+int show(const char *path, int *is_empty) {
+    FILE *f = fopen(path, "r");
+    int result = 0;
+    int empty = 1;
+    char c;
+
+    if (f != NULL) {
+        while ((c = fgetc(f)) != EOF) {
+            putchar(c);
+            empty = 0;
+        }
+        fclose(f);
+        result = 1;
+    }
+
+    if (is_empty != NULL) {
+        *is_empty = empty;
+    }
+
+    return result;
+}
+
+int read(char *path) {
+    int status = 0;
+    int empty = 0;
+    FILE *test = NULL;
+    int c;
+
+    if (scanf("%255s", path) == 1) {
+        test = fopen(path, "r");
+        if (test != NULL) {
+            fclose(test);
+            if (show(path, &empty)) {
+                status = 1;
+                if (empty) {
+                    printf("n/a");
+                }
+            }
+        }
+    } else {
+        while ((c = getchar()) != '\n' && c != EOF);
+    }
+
+    return status;
+}
+
+int write(const char *path) {
+    char line[MAX_LINE];
+    int c;
+    int success = 0;
+    int newline = 0;
+
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    if (fgets(line, MAX_LINE, stdin) != NULL) {
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
+        }
+
+        FILE *check = fopen(path, "r");
+        if (check != NULL) {
+            fseek(check, 0, SEEK_END);
+            newline = ftell(check) > 0;
+            fclose(check);
+        }
+
+        FILE *f = fopen(path, "a");
+        if (f != NULL) {
+            if (newline) {
+                fprintf(f, "\n%s", line);
+            } else {
+                fprintf(f, "%s", line);
+            }
+            fclose(f);
+            success = show(path, NULL);
+        }
+    }
+
+    return success;
+}
+
+void encrypt_caesar(char *text, int shift) {
+    for (int i = 0; text[i] != '\0'; i++) {
+        char c = text[i];
+        if (c >= 32 && c <= 126) {
+            text[i] = (char)(((c - 32 + shift) % 95) + 32);
+        }
+    }
+}
+
+int process_modules(int shift) {
+    DIR *dir = opendir(TARGET_DIR);
+    struct dirent *entry;
+    char path[MAX_PATH];
+    int success = 0;
+
+    if (dir != NULL) {
+        while ((entry = readdir(dir)) != NULL) {
+            size_t len = strlen(entry->d_name);
+            if (len > 2) {
+                snprintf(path, MAX_PATH, "%s/%s", TARGET_DIR, entry->d_name);
+                if (entry->d_name[len - 2] == '.' && entry->d_name[len - 1] == 'c') {
+                    FILE *f = fopen(path, "r");
+                    if (f != NULL) {
+                        char buffer[4096];
+                        size_t read_size = fread(buffer, 1, sizeof(buffer) - 1, f);
+                        buffer[read_size] = '\0';
+                        fclose(f);
+
+                        encrypt_caesar(buffer, shift);
+                        f = fopen(path, "w");
+                        if (f != NULL) {
+                            fwrite(buffer, 1, strlen(buffer), f);
+                            fclose(f);
+                        }
+                    }
+                } else if (entry->d_name[len - 2] == '.' && entry->d_name[len - 1] == 'h') {
+                    FILE *f = fopen(path, "w");
+                    if (f != NULL) {
+                        fclose(f); // очистить .h файл
+                    }
+                }
+            }
+        }
+        closedir(dir);
+        success = 1;
+    }
+
+    return success;
+}
+
+int main(void) {
+    int command = 0;
+    int file_loaded = 0;
+    char filepath[MAX_PATH] = "";
+    int run = 1;
+
+    while (run) {
+        if (!vybor(&command)) {
+            printf("n/a\n");
+        } else if (command == -1) {
+            run = 0;
+        } else if (command == 1) {
+            if (read(filepath)) {
+                file_loaded = 1;
+                printf("\n");
+            } else {
+                printf("n/a\n");
+                file_loaded = 0;
+            }
+        } else if (command == 2) {
+            if (!file_loaded) {
+                printf("n/a\n");
+            } else {
+                if (!write(filepath)) {
+                    printf("n/a\n");
+                } else {
+                    printf("\n");
+                }
+            }
+        } else if (command == 3) {
+            int shift;
+            if (scanf("%d", &shift) == 1) {
+                if (!process_modules(shift)) {
+                    printf("n/a\n");
+                } else {
+                    printf("\n");
+                }
+            } else {
+                printf("n/a\n");
+                while (getchar() != '\n');
+            }
+        } else {
+            printf("n/a\n");
+        }
+    }
+
+    return 0;
+}
+
+
+
+#include <stdio.h>
+#include <string.h>
 
 #define MAX_PATH 256
 #define MAX_LINE 1024
