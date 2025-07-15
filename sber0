@@ -1,3 +1,140 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PATH 256
+#define MAX_LINE 1024
+
+int vybor(int *n) {
+    int res = scanf("%d", n);
+    int c;
+
+    if (res != 1) {
+        while ((c = getchar()) != '\n' && c != EOF);
+    }
+
+    return res == 1;
+}
+
+int show(const char *path, int *is_empty) {
+    FILE *f = fopen(path, "r");
+    int result = 0;
+    int empty = 1;
+    char c;
+
+    if (f != NULL) {
+        while ((c = fgetc(f)) != EOF) {
+            putchar(c);
+            empty = 0;
+        }
+        fclose(f);
+        result = 1;
+    }
+
+    if (is_empty != NULL) {
+        *is_empty = empty;
+    }
+
+    return result;
+}
+
+int read(char *path) {
+    int status = 0;
+    int empty = 0;
+    FILE *test = NULL;
+    int c;
+
+    if (scanf("%255s", path) == 1) {
+        test = fopen(path, "r");
+        if (test != NULL) {
+            fclose(test);
+            if (show(path, &empty)) {
+                status = 1;
+                if (empty) {
+                    printf("n/a");
+                }
+            }
+        }
+    } else {
+        while ((c = getchar()) != '\n' && c != EOF);
+    }
+
+    return status;
+}
+
+int write(const char *path) {
+    char line[MAX_LINE];
+    int c;
+    int success = 0;
+    int newline = 0;
+
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    if (fgets(line, MAX_LINE, stdin) != NULL) {
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
+        }
+
+        FILE *check = fopen(path, "r");
+        if (check != NULL) {
+            fseek(check, 0, SEEK_END);
+            newline = ftell(check) > 0;
+            fclose(check);
+        }
+
+        FILE *f = fopen(path, "a");
+        if (f != NULL) {
+            if (newline) {
+                fprintf(f, "\n%s", line);
+            } else {
+                fprintf(f, "%s", line);
+            }
+            fclose(f);
+            success = show(path, NULL);
+        }
+    }
+
+    return success;
+}
+
+int main(void) {
+    int command = 0;
+    int file_loaded = 0;
+    char filepath[MAX_PATH] = "";
+    int run = 1;
+
+    while (run) {
+        if (!vybor(&command)) {
+            printf("n/a\n");
+        } else if (command == -1) {
+            run = 0;
+        } else if (command == 1) {
+            if (read(filepath)) {
+                file_loaded = 1;
+                printf("\n");
+            } else {
+                printf("n/a\n");
+                file_loaded = 0;
+            }
+        } else if (command == 2) {
+            if (!file_loaded) {
+                printf("n/a\n");
+            } else {
+                if (!write(filepath)) {
+                    printf("n/a\n");
+                } else {
+                    printf("\n");
+                }
+            }
+        } else {
+            printf("n/a\n");
+        }
+    }
+
+    return 0;
+}
+
+
 Да на основе моего кода #include <stdio.h>
 #include <string.h>
 
