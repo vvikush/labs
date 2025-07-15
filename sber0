@@ -1,3 +1,56 @@
+int main(void) {
+    int command = 0;
+    int file_loaded = 0;
+    char filepath[MAX_PATH] = "";
+    int run = 1;
+
+    while (run) {
+        if (!vybor(&command)) {
+            printf("n/a\n");
+        } else if (command == -1) {
+            run = 0;
+        } else if (command == 1) {
+            if (read(filepath)) {
+                file_loaded = 1;
+                printf("\n");
+            } else {
+                printf("n/a\n");
+                file_loaded = 0;
+            }
+        } else if (command == 2) {
+            if (!file_loaded) {
+                printf("n/a\n");
+            } else {
+                if (!write(filepath)) {
+                    printf("n/a\n");
+                }
+                printf("\n");
+            }
+        } else if (command == 3) {
+            int shift;
+            if (scanf("%d", &shift) == 1) {
+                // Очистка буфера после ввода числа
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF);
+
+                if (!process_modules(shift)) {
+                    printf("n/a\n");
+                }
+                printf("\n");
+            } else {
+                printf("n/a\n");
+                // Очистка буфера при ошибочном вводе
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF);
+            }
+        } else {
+            printf("n/a\n");
+        }
+    }
+
+    return 0;
+}
+
 int process_modules(int shift) {
     DIR *dir = opendir(TARGET_DIR);
     struct dirent *entry;
