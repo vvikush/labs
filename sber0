@@ -4,6 +4,121 @@
 #define MAX_PATH 256
 #define MAX_LINE 1024
 
+int input_number(int *n) {
+    int result = scanf("%d", n);
+    return result == 1;
+}
+
+int read_file(const char *path) {
+    FILE *file = fopen(path, "r");
+    int empty = 1;
+    int result = 0;
+    char ch;
+
+    if (file != NULL) {
+        while ((ch = fgetc(file)) != EOF) {
+            putchar(ch);
+            empty = 0;
+        }
+        fclose(file);
+        if (empty == 0) {
+            result = 1;
+        } else {
+            result = 2;
+        }
+    }
+
+    return result;
+}
+
+int load_file(char *path) {
+    int result = 0;
+    if (scanf("%255s", path) == 1) {
+        int read_result = read_file(path);
+        if (read_result == 1) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+    }
+    return result;
+}
+
+int write_to_file(const char *path) {
+    char line[MAX_LINE];
+    int result = 0;
+    FILE *f = NULL;
+
+    if (scanf(" ") == 0 || fgets(line, MAX_LINE, stdin) == NULL) {
+        result = 0;
+    } else {
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
+        }
+        f = fopen(path, "a");
+        if (f != NULL) {
+            fprintf(f, "\n%s", line);
+            fclose(f);
+            result = 1;
+        }
+    }
+
+    return result;
+}
+
+int main(void) {
+    int choice = 0;
+    int loaded = 0;
+    int running = 1;
+    char path[MAX_PATH] = "";
+
+    while (running == 1) {
+        if (input_number(&choice) == 0) {
+            printf("n/a\n");
+            running = 0;
+        } else {
+            if (choice == -1) {
+                running = 0;
+            }
+
+            if (choice == 1 && running == 1) {
+                if (load_file(path) == 1) {
+                    loaded = 1;
+                } else {
+                    printf("n/a\n");
+                    loaded = 0;
+                }
+                printf("\n");
+            }
+
+            if (choice == 2 && running == 1) {
+                if (loaded == 1 && write_to_file(path) == 1) {
+                    int read_result = read_file(path);
+                    if (read_result == 1) {
+                        printf("\n");
+                    } else {
+                        printf("n/a\n\n");
+                    }
+                } else {
+                    printf("n/a\n\n");
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PATH 256
+#define MAX_LINE 1024
+
 int read_file(const char *path) {
     FILE *f = fopen(path, "r");
     int ch = 0;
