@@ -1,4 +1,96 @@
 
+// src/cipher.c
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PATH 256
+#define MAX_LINE 1024
+
+int read_choice(int *n) {
+    int res = scanf("%d", n);
+    return res == 1;
+}
+
+int read_path(char *path) {
+    return scanf("%255s", path) == 1;
+}
+
+int print_file(const char *path) {
+    FILE *f = fopen(path, "r");
+    if (f == NULL) return 0;
+
+    int empty = 1;
+    char ch;
+    while ((ch = fgetc(f)) != EOF) {
+        putchar(ch);
+        empty = 0;
+    }
+
+    fclose(f);
+    return !empty;
+}
+
+int append_to_file(const char *path) {
+    char line[MAX_LINE];
+
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF) {} // очистка stdin
+
+    if (fgets(line, MAX_LINE, stdin) == NULL) return 0;
+
+    size_t len = strlen(line);
+    if (len > 0 && line[len - 1] == '\n') line[len - 1] = '\0';
+
+    FILE *f = fopen(path, "a");
+    if (f == NULL) return 0;
+
+    fprintf(f, "\n%s", line);
+    fclose(f);
+
+    return print_file(path);
+}
+
+int main(void) {
+    int running = 1;
+    int loaded = 0;
+    char path[MAX_PATH] = "";
+
+    while (running) {
+        int choice = 0;
+        if (!read_choice(&choice)) {
+            printf("n/a\n");
+            continue;
+        }
+
+        if (choice == -1) {
+            running = 0;
+        } else if (choice == 1) {
+            if (read_path(path)) {
+                loaded = print_file(path);
+                if (!loaded) printf("n/a\n");
+            } else {
+                printf("n/a\n");
+            }
+            printf("\n");
+        } else if (choice == 2) {
+            if (loaded) {
+                if (!append_to_file(path)) {
+                    printf("n/a\n");
+                }
+            } else {
+                printf("n/a\n");
+            }
+            printf("\n");
+        } else {
+            printf("n/a\n");
+        }
+    }
+
+    return 0;
+}
+
+
 #include <stdio.h>
 #include <string.h>
 
