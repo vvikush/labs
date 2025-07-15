@@ -1,3 +1,138 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PATH 256
+#define MAX_LINE 1024
+
+int read_number(int *n) {
+    int res = scanf("%d", n);
+    if (res != 1) {
+        while (getchar() != '\n');
+    }
+    return res == 1;
+}
+
+int show_file(const char *path, int *is_empty) {
+    FILE *f = fopen(path, "r");
+    if (f == NULL) return 0;
+
+    int empty = 1;
+    char ch;
+    while ((ch = fgetc(f)) != EOF) {
+        putchar(ch);
+        empty = 0;
+    }
+    fclose(f);
+
+    if (is_empty != NULL) {
+        *is_empty = empty;
+    }
+
+    return 1;
+}
+
+int load_file(char *path) {
+    if (scanf("%255s", path) != 1) {
+        while (getchar() != '\n');
+        return 0;
+    }
+
+    // Сначала проверяем, существует ли файл
+    FILE *test = fopen(path, "r");
+    if (test == NULL) {
+        return 0;
+    }
+    fclose(test);
+
+    int empty = 0;
+    if (!show_file(path, &empty)) return 0;
+    
+    if (empty) {
+        printf("n/a");
+    }
+    
+    return 1;
+}
+
+int write_to_file(const char *path) {
+    char line[MAX_LINE];
+
+    // очистка буфера от лишнего '\n' после scanf
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF) {}
+
+    if (fgets(line, MAX_LINE, stdin) == NULL) return 0;
+
+    size_t len = strlen(line);
+    if (len > 0 && line[len - 1] == '\n') {
+        line[len - 1] = '\0';
+    }
+
+    FILE *f = fopen(path, "a");
+    if (f == NULL) return 0;
+
+    // Проверяем, нужно ли добавлять перевод строки
+    int needs_newline = 0;
+    FILE *check = fopen(path, "r");
+    if (check) {
+        fseek(check, 0, SEEK_END);
+        needs_newline = ftell(check) > 0;
+        fclose(check);
+    }
+
+    if (needs_newline) {
+        fprintf(f, "\n%s", line);
+    } else {
+        fprintf(f, "%s", line);
+    }
+    fclose(f);
+
+    // Всегда выводим содержимое файла после записи
+    return show_file(path, NULL);
+}
+
+int main(void) {
+    int command = 0;
+    int file_loaded = 0;
+    char filepath[MAX_PATH] = "";
+    int run = 1;
+
+    while (run) {
+        if (!read_number(&command)) {
+            printf("n/a\n");
+            continue;
+        }
+
+        if (command == -1) {
+            run = 0;
+        } else if (command == 1) {
+            if (load_file(filepath)) {
+                file_loaded = 1;
+                printf("\n");
+            } else {
+                printf("n/a\n");
+                file_loaded = 0;
+            }
+        } else if (command == 2) {
+            if (!file_loaded) {
+                printf("n/a\n");
+            } else {
+                if (!write_to_file(filepath)) {
+                    printf("n/a\n");
+                } else {
+                    printf("\n");
+                }
+            }
+        } else {
+            printf("n/a\n");
+        }
+    }
+
+    return 0;
+}
+
+
+
 
 #include <stdio.h>
 #include <string.h>
