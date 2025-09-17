@@ -1,0 +1,20 @@
+[
+  {
+    "id": "company-overview",
+    "title": "О компании",
+    "content": "Acme Corp — SaaS-платформа для автоматизации поддержки клиентов.",
+    "tags": ["about", "company"]
+  },
+  {
+    "id": "pricing",
+    "title": "Тарифы и биллинг",
+    "content": "План Pro — 20 USD/мес, Enterprise — по запросу. Годовая скидка 20%.",
+    "tags": ["pricing", "billing"]
+  },
+  {
+    "id": "support-sla",
+    "title": "Поддержка и SLA",
+    "content": "Ответ в течение 24 часов в будние, приоритет для Enterprise.",
+    "tags": ["support", "sla"]
+  }
+]
