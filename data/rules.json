@@ -1,0 +1,13 @@
+{
+  "signature": "\n— С уважением,\nКоманда Acme Corp\n",
+  "policies": {
+    "language": "ru",
+    "tone": "вежливый, деловой, краткий",
+    "max_answer_chars": 1500
+  },
+  "routing": {
+    "pricing_keywords": ["цена", "тариф", "стоимость", "оплата", "счет"],
+    "sales_forward_to": "sales@acme.example",
+    "support_forward_to": "support@acme.example"
+  }
+}
